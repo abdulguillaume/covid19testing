@@ -1,0 +1,95 @@
+﻿@model IEnumerable<Covid19Testing.Models.TblLabTests>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Interpretation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TestingDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TestingTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReportingDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReportingTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.InsertTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.InsertBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UpdateTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UpdateBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BiodataNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MethodNavigation)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Interpretation)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TestingDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TestingTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReportingDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReportingTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.InsertTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.InsertBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UpdateTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UpdateBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BiodataNavigation.Fullname)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MethodNavigation.InsertBy)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

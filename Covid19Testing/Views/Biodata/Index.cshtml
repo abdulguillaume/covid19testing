@@ -1,0 +1,95 @@
+﻿@*@@model IEnumerable<Covid19Testing.Models.TblBiodata>*@
+
+@model PagedList.Core.IPagedList<Covid19Testing.Models.TblBiodata>
+@addTagHelper *, PagedList.Core.Mvc
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+<h2>Collected Biodata</h2>
+
+<p align="right">
+    <a asp-action="Create">Create New Biodata</a>
+</p>
+
+<form method="get" asp-controller="Biodata" asp-action="search">
+    <div class="input-group">
+        <input name="keyword" value="@ViewBag.keyword" placeholder="search by name" /> <button type="submit">Search</button>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Fullname
+            </th>
+            <th>
+                DOB
+            </th>
+            <th>
+                Gender
+            </th>
+            <th>
+                EPID-NO
+            </th>
+            <th>
+                Inserted on
+            </th>
+            <th>
+                Inserted by
+            </th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Count() == 0)
+        {
+            <tr>
+                <td colspan="6" style="color:red" align="center">
+                    No registration found.
+                </td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Fullname)
+                    </td>
+                    <td>
+                        @item.Dateofbirth.ToShortDateString()
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.GenderNavigation.Gender)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EpidNo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.InsertTime)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.InsertBy)
+                    </td>
+
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        }
+        <tr>
+            <td colspan="6" align="left">
+                <pager list="@Model" asp-controller="Biodata" asp-action="search" asp-route-keyword="@ViewBag.keyword" />
+            </td>
+        </tr>
+    </tbody>
+</table>

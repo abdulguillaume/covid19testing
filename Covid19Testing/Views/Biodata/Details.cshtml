@@ -1,0 +1,84 @@
+﻿@model Covid19Testing.Models.TblBiodata
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Biodata</h2>
+
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Fullname)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Fullname)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.LegalGardianName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LegalGardianName)
+        </dd>
+        <dt>
+            @Model.Dateofbirth.ToShortDateString()
+        </dt>
+        <dd>
+            @Model.Dateofbirth.ToShortDateString()
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.GenderNavigation.Gender)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.GenderNavigation.Gender)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.EpidNo)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.EpidNo)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.HomePhone)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.HomePhone)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.ResidentialAddress)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.ResidentialAddress)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.InsertTime)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.InsertTime)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.InsertBy)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.InsertBy)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.UpdateTime)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.UpdateTime)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.UpdateBy)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.UpdateBy)
+        </dd>
+
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

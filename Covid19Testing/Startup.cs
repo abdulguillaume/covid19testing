@@ -2,11 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Covid19Testing.IRepos;
+using Covid19Testing.Models;
+using Covid19Testing.Repos;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -31,8 +36,19 @@ namespace Covid19Testing
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddSingleton<ISpecimenRepos , SpecimenRepos>();
+            services.AddSingleton<ITestIndicatorRepos, TestIndicatorRepos>();//
+            services.AddSingleton<IMethodRepos, MethodRepos>();
+
+            services.AddSingleton<IBiodataRepos, BiodataRepos>();
+
+            services.AddSingleton<ILabTestRepos, LabTestRepos>();
+
+            //ILabTestRepos
+
+            //services.AddDbContext<DbContext, Covid19TestingContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

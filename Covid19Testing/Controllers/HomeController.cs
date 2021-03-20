@@ -5,11 +5,22 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Covid19Testing.Models;
+using Covid19Testing.IRepos;
+using Covid19Testing.Repos;
 
 namespace Covid19Testing.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly ISpecimenRepos specimen;
+        private readonly ITestIndicatorRepos indicators;
+
+        public HomeController(ISpecimenRepos _specimen, ITestIndicatorRepos _indicators)
+        {
+            specimen = _specimen;
+            indicators = _indicators;
+        }
+
         public IActionResult Index()
         {
             return View();
