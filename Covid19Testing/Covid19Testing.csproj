@@ -9,6 +9,12 @@
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
     <PackageReference Include="PagedList.Core.Mvc" Version="1.2.0" />
+    <PackageReference Include="Syncfusion.DocIO.Net.Core" Version="18.4.0.49" />
+    <PackageReference Include="Syncfusion.DocIORenderer.Net.Core" Version="18.4.0.49" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Attributes\" />
   </ItemGroup>
 
 </Project>

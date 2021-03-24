@@ -1,84 +1,278 @@
-﻿@model Covid19Testing.Models.TblLabTests
+﻿@model Covid19Testing.ViewModels.LabTestDetailsViewModel
 
 @{
     ViewData["Title"] = "Edit";
 }
 
-<h2>Edit</h2>
+<h2>Update COVID-19 TESTING FORM</h2>
 
-<h4>TblLabTests</h4>
+<div align="right">
+    <a asp-action="Index">COVID-19 TESTING RESULTs</a>
+</div>
+
+<h4>Biodata</h4>
+
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.BioData.Fullname)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BioData.Fullname)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.BioData.LegalGardianName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BioData.LegalGardianName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.BioData.Dateofbirth)
+        </dt>
+        <dd>
+            @Model.BioData.Dateofbirth.ToString("dd/MMM/yy")
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.BioData.GenderNavigation.Gender)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BioData.GenderNavigation.Gender)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.BioData.EpidNo)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BioData.EpidNo)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.BioData.LocalPhone)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BioData.LocalPhone)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.BioData.HomePhone)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BioData.HomePhone)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.BioData.ResidentialAddress)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BioData.ResidentialAddress)
+        </dd>
+
+    </dl>
+</div>
+
+<h4>Test</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
+
+
         <form asp-action="Edit">
+
+            <input asp-for="@Model.BioData.Id" class="form-control" type="hidden" />
+
+            <input asp-for="@Model.LabTest.Biodata" class="form-control" type="hidden" />
+
+            <input asp-for="@Model.LabTest.Id" class="form-control" type="hidden" />
+
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
+
             <div class="form-group">
-                <label asp-for="Biodata" class="control-label"></label>
-                <select asp-for="Biodata" class="form-control" asp-items="ViewBag.Biodata"></select>
-                <span asp-validation-for="Biodata" class="text-danger"></span>
+                <label asp-for="@Model.LabTest.Method" class="control-label"></label>
+                <select asp-for="@Model.LabTest.Method" class="form-control" asp-items="ViewBag.Method" disabled></select>
+            </div>
+
+            <div class="form-group" id="LabTestIndicators">
+
+
+                @for (var i = 0; i < Model.Indicators.Count; i++)
+                {
+                    <div class="form-group">
+                        @*@Html.HiddenFor(m => m.Indicators[i].Method)
+                    @Html.HiddenFor(m => m.Indicators[i].Indicator)
+
+                    @Html.DisplayFor(m => m.Indicators[i].IndicatorName, new { @class = "form-control" })
+                    @Html.EditorFor(m => m.Indicators[i].IndicatorValue, new { @class = "form-control" })*@
+                        <input asp-for="@Model.Indicators[@i].Id" value="@Model.Indicators[@i].Id" type="hidden" />
+                        <input asp-for="@Model.Indicators[@i].IndicatorName" value="@Model.Indicators[@i].IndicatorName" type="hidden" />
+                        <input asp-for="@Model.Indicators[@i].Labtest" value="@Model.Indicators[@i].Labtest" type="hidden" />
+                        <input asp-for="@Model.Indicators[@i].Method" value="@Model.Indicators[@i].Method" type="hidden" />
+                        <input asp-for="@Model.Indicators[@i].Indicator" value="@Model.Indicators[@i].Indicator" type="hidden" />
+                        <label class="control-label">@Model.Indicators[@i].IndicatorName</label>
+                        <input asp-for="@Model.Indicators[@i].IndicatorValue" value="@Model.Indicators[@i].IndicatorValue" type="decimal" min="0" class="form-control" />
+                        <span asp-validation-for="@Model.Indicators[i].IndicatorValue" class="text-danger"></span>
+                    </div>
+                }
+
+
+            </div>
+
+            <div class="form-group">
+                <label asp-for="@Model.LabTest.TestingDate" class="control-label"></label>
+                <input asp-for="@Model.LabTest.TestingDate" class="form-control" type="date" />
+                <span asp-validation-for="@Model.LabTest.TestingDate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Method" class="control-label"></label>
-                <select asp-for="Method" class="form-control" asp-items="ViewBag.Method"></select>
-                <span asp-validation-for="Method" class="text-danger"></span>
+                <label asp-for="@Model.LabTest.TestingTime" class="control-label"></label>
+                <input asp-for="@Model.LabTest.TestingTime" class="form-control" type="time" />
+                <span asp-validation-for="@Model.LabTest.TestingTime" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="Interpretation" class="control-label"></label>
-                <input asp-for="Interpretation" class="form-control" />
-                <span asp-validation-for="Interpretation" class="text-danger"></span>
+
+                <label asp-for="@Model.LabTest.Interpretation" class="control-label"></label>
+
+                @if (Model.LabTest.Interpretation != 97)
+                {
+                    <input asp-for="@Model.LabTest.Interpretation" class="form-control" type="hidden" />
+                    <select asp-for="@Model.LabTest.Interpretation" class="form-control" asp-items="ViewBag.Results" disabled>
+                        <option value="97">NO RESULT</option>
+                    </select>
+                }
+                else
+                {
+                    <select asp-for="@Model.LabTest.Interpretation" class="form-control" asp-items="ViewBag.Results">
+                        <option value="97">NO RESULT</option>
+                    </select>
+                }
+
+
             </div>
-            <div class="form-group">
-                <label asp-for="TestingDate" class="control-label"></label>
-                <input asp-for="TestingDate" class="form-control" />
-                <span asp-validation-for="TestingDate" class="text-danger"></span>
+
+            <div class="form-group" id="LabTestReportDateTime">
+
+                @if(Model.LabTest.Interpretation!=97)
+                {
+                    <label asp-for="@Model.LabTest.ReportingDate" class="control-label"></label>
+                    <input asp-for="@Model.LabTest.ReportingDate" class="form-control" type="date" />
+                    <label asp-for="@Model.LabTest.ReportingTime" class="control-label" ></label>
+                    <input asp-for="@Model.LabTest.ReportingTime" class="form-control" type="time" />
+
+                }
+
             </div>
+
+            <hr />
+            <h4 align="center">OFFICIAL USE ONLY</h4>
+
             <div class="form-group">
-                <label asp-for="TestingTime" class="control-label"></label>
-                <input asp-for="TestingTime" class="form-control" />
-                <span asp-validation-for="TestingTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ReportingDate" class="control-label"></label>
-                <input asp-for="ReportingDate" class="form-control" />
-                <span asp-validation-for="ReportingDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ReportingTime" class="control-label"></label>
-                <input asp-for="ReportingTime" class="form-control" />
-                <span asp-validation-for="ReportingTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="InsertTime" class="control-label"></label>
-                <input asp-for="InsertTime" class="form-control" />
-                <span asp-validation-for="InsertTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="InsertBy" class="control-label"></label>
-                <input asp-for="InsertBy" class="form-control" />
-                <span asp-validation-for="InsertBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UpdateTime" class="control-label"></label>
-                <input asp-for="UpdateTime" class="form-control" />
-                <span asp-validation-for="UpdateTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UpdateBy" class="control-label"></label>
-                <input asp-for="UpdateBy" class="form-control" />
-                <span asp-validation-for="UpdateBy" class="text-danger"></span>
+                <table>
+                    @for (int i = 0; i < Model.Specimen.Count; i++)
+                    {
+
+                        <tr>
+                            <td>
+                                <input asp-for="@Model.Specimen[i].Id" value="@Model.Specimen[@i].Id" type="hidden" />
+                                <input asp-for="@Model.Specimen[i].Labtest" value="@Model.Specimen[@i].Labtest" type="hidden" />
+                                <input asp-for="@Model.Specimen[i].Specimen" value="@Model.Specimen[@i].Specimen" type="hidden" />
+                                <input asp-for="@Model.Specimen[i].SpecimenName" value="@Model.Specimen[@i].SpecimenName" type="hidden" />
+
+                                @*<label class="control-label">@Model.Specimen[i].SpecimenName</label>*@
+                                @Model.Specimen[i].SpecimenName
+                            </td>
+                            <td>
+                                <input asp-for="@Model.Specimen[i].Checked" type="checkbox" class="specimen_checkbox" data-other="@Model.Specimen[i].Specimen" data-position="@i"/>
+                            </td>
+                        </tr>
+                            <tr><td colspan="2">
+                                @if ( Model.Specimen[i].Specimen==99)
+                                {
+                                    <div id="specimen_other">
+
+                                        @if (Model.Specimen[i].Checked)
+                                        {
+                                            <label class="control-label">Specify</label>
+                                            <input asp-for="@Model.Specimen[i].SpecimenOther" type="text" class="form-control" />
+                                            <span asp-validation-for="@Model.Specimen[i].SpecimenOther" class="text-danger"></span>
+                                        }
+
+                                    </div>
+
+                                }
+                                </td>
+                        </tr>
+
+
+
+
+                        @*@Html.HiddenFor(m => m.Specimen[i].Specimen)
+                    @Html.HiddenFor(m => m.Specimen[i].SpecimenName)
+                    @Html.DisplayFor(m => m.Specimen[i].SpecimenName)
+                    @Html.CheckBoxFor(m => m.Specimen[i].Checked)*@
+                        @*<input asp-for="InsertTime" class="form-control" />
+                    <span asp-validation-for="InsertTime" class="text-danger"></span>*@
+
+
+                    }
+                </table>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />
             </div>
         </form>
+
+
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.specimen_checkbox').click(function () {
+                debugger;
+                if ($(this).data("other") == "99") {
+                    if ($(this).is(':checked')) {
+                        var position = $(this).data("position");
+                        var divSpecimen = $("#specimen_other");
+                        divSpecimen.empty();
+
+                        var input = `<label class="control-label" >Specify</label>
+                                            <input name="Specimen[`+ position + `].SpecimenOther" id="Specimen_` + position +`__SpecimenOther" class="form-control" type="text"/>
+                                            <span class="text-danger field-validation-valid" data-valmsg-for="Specimen[`+ position + `].SpecimenOther" data-valmsg-replace="true"></span>`;
+
+                        divSpecimen.append(input);
+
+                    }
+                    else {
+                        var divSpecimen = $("#specimen_other");
+                        divSpecimen.empty();
+                    }
+                }
+            });
+
+            $('#LabTest_Interpretation').change(function () {
+                var m = $(this).val();
+
+                if (m)
+                {
+                    //do ajax
+                    var divReport = $("#LabTestReportDateTime");
+                    divReport.empty();
+                    if (m == 97) return;
+                    var input = `<div class="form-group">
+                                            <label class="control-label" >ReportingDate</label>
+                                            <input name="LabTest.ReportingDate" id="LabTest_ReportingDate" class="form-control" type="date"/>
+                                            <label class="control-label" >ReportingTime</label>
+                                            <input name="LabTest.ReportingTime" id="LabTest_ReportingTime" class="form-control" type="time"/>
+                                            </div>`;
+
+                    divReport.append(input);
+
+                }
+            });
+
+        });
+    </script>
 }

@@ -20,6 +20,8 @@ namespace Covid19Testing.ViewModels
             Specimen = obj.Specimen;
         }*/
 
+        public LabTestDetailsViewModel() { }
+
         public LabTestDetailsViewModel(TblLabTests test)
         {//perfect
             BioData = test.BiodataNavigation;
@@ -61,6 +63,7 @@ namespace Covid19Testing.ViewModels
             {
                 TblLabTestsSpecimen s = new TblLabTestsSpecimen();
                 s.Specimen = t.Id;
+                s.SpecimenName = t.Type;
                 LabTest.TblLabTestsSpecimen.Add(s);
                 Specimen.Add(s);
             }
@@ -68,7 +71,7 @@ namespace Covid19Testing.ViewModels
 
         }
 
-        public void SetMethod(int Id)
+        /*public void SetMethod(int Id)
         {
             
             Indicators = new List<TblLabTestsIndicatorsValues>();
@@ -87,7 +90,7 @@ namespace Covid19Testing.ViewModels
 
             }
 
-        }
+        }*/
 
         /*public void Update(LabTestDetailsViewModel obj)
         {

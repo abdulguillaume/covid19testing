@@ -34,7 +34,8 @@ namespace Covid19Testing.Repos
             if (indicator != null)
             {
                 Context.TlkpTestIndicators.Remove(indicator);
-                Save();
+                //Save();
+                Context.SaveChanges();
             }
         }
 
@@ -57,10 +58,11 @@ namespace Covid19Testing.Repos
             return Context.TlkpTestIndicators.Find(id);
         }
 
-        public void Save()
+        public void Save(TlkpTestIndicators obj)
         {
             //throw new NotImplementedException();
             Context.SaveChanges();
+            Context.Entry(obj).ReloadAsync();
         }
 
         public void Update(TlkpTestIndicators obj)
@@ -70,7 +72,7 @@ namespace Covid19Testing.Repos
             if (indicator != null)
             {
                 indicator.IndicatorName = obj.IndicatorName;
-                Save();
+                Save(indicator);
             }
         }
     }

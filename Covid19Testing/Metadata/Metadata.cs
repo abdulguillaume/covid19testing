@@ -15,16 +15,13 @@ namespace Covid19Testing.Metadata
         [DisplayName("Gardian")]
         public string LegalGardianName { get; set; }
 
-        [Required(ErrorMessage = "*", AllowEmptyStrings = false)]
+        //[Required(ErrorMessage = "*", AllowEmptyStrings = false)]
         [DisplayName("DOB")]
         [DataType(DataType.Date)]
         public DateTime Dateofbirth;
 
         [Required(ErrorMessage = "*", AllowEmptyStrings = false)]
         public int Gender;
-
-
-        public string EpidNo;
 
         [Required(ErrorMessage = "*", AllowEmptyStrings = false)]
         [RegularExpression("^(\\+)[0-9]*", ErrorMessage = "*")]
@@ -33,6 +30,17 @@ namespace Covid19Testing.Metadata
         [Required(ErrorMessage = "*", AllowEmptyStrings = false)]
         [DisplayName("Address")]
         public string ResidentialAddress;
+
+    }
+
+    public class TblLabTests_MD
+    {
+        [Required(ErrorMessage = "*")]
+        [DataType(DataType.Date)]
+        public DateTime? TestingDate;
+        
+        [DataType(DataType.Date)]
+        public DateTime? ReportingDate;
 
     }
 }

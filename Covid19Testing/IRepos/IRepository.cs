@@ -13,7 +13,7 @@ namespace Covid19Testing.IRepos
         void Update(T obj);
         void Delete(object id);
         void Archive(object id);
-        void Save();
+        void Save(T obj);
 
     }
 }

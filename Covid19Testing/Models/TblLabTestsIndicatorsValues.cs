@@ -10,9 +10,9 @@ namespace Covid19Testing.Models
         public int Indicator { get; set; }
         public int Method { get; set; }
         public decimal? IndicatorValue { get; set; }
-        public DateTime InsertTime { get; set; }
+        public DateTime? InsertTime { get; set; }
         public string InsertBy { get; set; }
-        public DateTime UpdateTime { get; set; }
+        public DateTime? UpdateTime { get; set; }
         public string UpdateBy { get; set; }
 
         public TblLabTests LabtestNavigation { get; set; }

@@ -63,8 +63,14 @@ namespace Covid19Testing.Models
                 entity.Property(e => e.Gender).HasColumnName("gender");
 
                 entity.Property(e => e.HomePhone)
-                    .IsRequired()
+                    //.IsRequired()
                     .HasColumnName("home_phone")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.LocalPhone)
+                    .IsRequired()
+                    .HasColumnName("local_phone")
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
@@ -153,6 +159,10 @@ namespace Covid19Testing.Models
                 entity.Property(e => e.UpdateTime)
                     .HasColumnName("update_time")
                     .HasColumnType("datetime");
+
+                entity.Property(e => e.Approved)
+                    .HasColumnName("approved")
+                    .HasColumnType("bit");
 
                 entity.HasOne(d => d.BiodataNavigation)
                     .WithMany(p => p.TblLabTests)

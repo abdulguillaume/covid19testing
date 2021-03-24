@@ -6,6 +6,12 @@
 
 <h2>Edit Biodata</h2>
 
+<div align="right">
+    <a asp-action="Index">
+        Biodata Search Page
+    </a>
+</div>
+
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -24,12 +30,14 @@
             </div>
             <div class="form-group">
                 <label asp-for="Dateofbirth" class="control-label"></label>
-                <input asp-for="Dateofbirth" class="form-control" type="date"  />
+                <input asp-for="Dateofbirth" class="form-control" type="date" />
                 <span asp-validation-for="Dateofbirth" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Gender" class="control-label"></label>
-                <select asp-for="Gender" class="form-control" asp-items="ViewBag.Gender"></select>
+                <select asp-for="Gender" class="form-control" asp-items="ViewBag.Gender">
+                    <option value="">[Select Gender]</option>
+                </select>
                 <span asp-validation-for="Gender" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -38,8 +46,13 @@
                 <span asp-validation-for="EpidNo" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="LocalPhone" class="control-label"></label>
+                <input asp-for="LocalPhone" class="form-control" placeholder="Ex: 0000000000" />
+                <span asp-validation-for="LocalPhone" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="HomePhone" class="control-label"></label>
-                <input asp-for="HomePhone" class="form-control" />
+                <input asp-for="HomePhone" class="form-control" placeholder="Ex: +3400000000" />
                 <span asp-validation-for="HomePhone" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -55,9 +68,7 @@
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

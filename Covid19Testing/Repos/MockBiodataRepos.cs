@@ -15,17 +15,17 @@ namespace Covid19Testing.Repos
 
         GenderRepos genders = new GenderRepos();
 
-        string admin = "admin";
+        //string admin = "admin";
 
         public MockBiodataRepos()
         {
-            DateTime now = DateTime.Now;
+            //DateTime now = DateTime.Now;
 
             _biodata = new List<TblBiodata>()
             {
-                    new TblBiodata(){ Id = 1, Fullname = "Abdul Guillaume", Dateofbirth = DateTime.Parse("02/23/1982"), ResidentialAddress="Redroof", GenderNavigation = genders.GetById(1), InsertTime=now, InsertBy=admin, UpdateTime=now, UpdateBy=admin},
-                    new TblBiodata(){ Id = 2, Fullname = "Sterlande Louis", Dateofbirth = DateTime.Parse("04/04/1990"), ResidentialAddress="PaP", GenderNavigation = genders.GetById(2), InsertTime=now, InsertBy=admin, UpdateTime=now, UpdateBy=admin},
-                    new TblBiodata(){ Id = 2, Fullname = "Rolls Guillaume", Dateofbirth = DateTime.Parse("11/20/2021"), ResidentialAddress="PaP", GenderNavigation = genders.GetById(1), InsertTime=now, InsertBy=admin, UpdateTime=now, UpdateBy=admin}
+                   // new TblBiodata(){ Id = 1, Fullname = "Abdul Guillaume", Dateofbirth = DateTime.Parse("02/23/1982"), ResidentialAddress="Redroof", GenderNavigation = genders.GetById(1), InsertTime=now, InsertBy=admin, UpdateTime=now, UpdateBy=admin},
+                   // new TblBiodata(){ Id = 2, Fullname = "Sterlande Louis", Dateofbirth = DateTime.Parse("04/04/1990"), ResidentialAddress="PaP", GenderNavigation = genders.GetById(2), InsertTime=now, InsertBy=admin, UpdateTime=now, UpdateBy=admin},
+                   // new TblBiodata(){ Id = 2, Fullname = "Rolls Guillaume", Dateofbirth = DateTime.Parse("11/20/2021"), ResidentialAddress="PaP", GenderNavigation = genders.GetById(1), InsertTime=now, InsertBy=admin, UpdateTime=now, UpdateBy=admin}
             };
         }
 
@@ -40,8 +40,8 @@ namespace Covid19Testing.Repos
             //throw new NotImplementedException();
             obj.Id = _biodata.Max(e => e.Id) + 1;
             obj.GenderNavigation = genders.GetById(obj.Gender);
-            obj.UpdateBy = admin;
-            obj.UpdateTime = DateTime.Now;
+            //obj.UpdateBy = admin;
+            //obj.UpdateTime = DateTime.Now;
             _biodata.Add(obj);
         }
 
@@ -81,7 +81,7 @@ namespace Covid19Testing.Repos
         }
 
 
-        public void Save()
+        public void Save(TblBiodata obj)
         {
             throw new NotImplementedException();
         }
@@ -101,8 +101,8 @@ namespace Covid19Testing.Repos
                 subject.EpidNo = obj.EpidNo;
                 subject.HomePhone = obj.HomePhone;
                 subject.ResidentialAddress = obj.ResidentialAddress;
-                subject.UpdateBy = admin;
-                subject.UpdateTime = DateTime.Now;
+                //subject.UpdateBy = admin;
+                //subject.UpdateTime = DateTime.Now;
             }
 
 

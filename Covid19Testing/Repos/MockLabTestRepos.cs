@@ -39,7 +39,7 @@ namespace Covid19Testing.Repos
             
         }
 
-        public void Save()
+        public void Save(LabTestDetailsViewModel obj)
         {
             throw new NotImplementedException();
         }

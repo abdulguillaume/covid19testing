@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Covid19Testing.Models
 {
@@ -11,16 +13,37 @@ namespace Covid19Testing.Models
         }
 
         public int Id { get; set; }
+        [Required(ErrorMessage = "*", AllowEmptyStrings = false)]
         public string Fullname { get; set; }
+        [DisplayName("Gardian")]
         public string LegalGardianName { get; set; }
+        [Required(ErrorMessage = "*", AllowEmptyStrings = false)]
+        [DisplayName("DOB")]
         public DateTime Dateofbirth { get; set; }
+        [Required(ErrorMessage = "*", AllowEmptyStrings =false)]
         public int Gender { get; set; }
+        [DisplayName("EPID-NO")]
         public string EpidNo { get; set; }
+        //[Required(ErrorMessage = "*", AllowEmptyStrings = false)]
+        [RegularExpression("^(\\+)[0-9]*", ErrorMessage = "Intl. format")]
+        [DisplayName("Intl. Phone")]
         public string HomePhone { get; set; }
+
+        [Required(ErrorMessage = "*", AllowEmptyStrings = false)]
+        [RegularExpression("^[0-9]*", ErrorMessage = "Local format")]
+        [DisplayName("Local Phone")]
+        public string LocalPhone { get; set; }
+
+        [Required(ErrorMessage = "*", AllowEmptyStrings = false)]
+        [DisplayName("Address")]
         public string ResidentialAddress { get; set; }
-        public DateTime InsertTime { get; set; }
+        [DisplayName("Inserted on")]
+        public DateTime? InsertTime { get; set; }
+        [DisplayName("Inserted by")]
         public string InsertBy { get; set; }
-        public DateTime UpdateTime { get; set; }
+        [DisplayName("Updated on")]
+        public DateTime? UpdateTime { get; set; }
+        [DisplayName("Updated by")]
         public string UpdateBy { get; set; }
 
         public TlkpGenders GenderNavigation { get; set; }

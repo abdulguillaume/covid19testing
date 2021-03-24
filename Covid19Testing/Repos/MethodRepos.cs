@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Microsoft.EntityFrameworkCore;
+
 namespace Covid19Testing.Repos
 {
     public class MethodRepos : IMethodRepos
@@ -40,10 +42,11 @@ namespace Covid19Testing.Repos
         public TlkpTestMethods GetById(object id)
         {
             //throw new NotImplementedException();
-            return Context.TlkpTestMethods.Find(id);
+            return Context.TlkpTestMethods.Include(i=>i.TlkpTestIndicators)
+                .FirstOrDefault(m=>m.Id == (int)id);
         }
 
-        public void Save()
+        public void Save(TlkpTestMethods obj)
         {
             throw new NotImplementedException();
         }

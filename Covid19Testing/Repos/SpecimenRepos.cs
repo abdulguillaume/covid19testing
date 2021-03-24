@@ -34,7 +34,7 @@ namespace Covid19Testing.Repos
             if (specimen != null)
             {
                 Context.TlkpSpecimen.Remove(specimen);
-                Save();
+                Save(specimen);
             }
         }
 
@@ -50,10 +50,11 @@ namespace Covid19Testing.Repos
             return Context.TlkpSpecimen.Find(id);
         }
 
-        public void Save()
+        public void Save(TlkpSpecimen obj)
         {
             //throw new NotImplementedException();
             Context.SaveChanges();
+            Context.Entry(obj).ReloadAsync();
         }
 
         public void Update(TlkpSpecimen obj)
@@ -63,7 +64,7 @@ namespace Covid19Testing.Repos
             if (specimen != null)
             {
                 specimen.Type = obj.Type;
-                Save();
+                Save(specimen);
             }
         }
     }

@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Microsoft.EntityFrameworkCore;
+
 namespace Covid19Testing.Repos
 {
     public class LabTestRepos : ILabTestRepos
@@ -34,7 +36,9 @@ namespace Covid19Testing.Repos
 
             Context.TblLabTests.Add(test);
 
-            Save();
+            obj.LabTest = test;
+
+            Save(obj);
         }
 
         public void Delete(object id)
@@ -45,7 +49,9 @@ namespace Covid19Testing.Repos
         public IEnumerable<LabTestDetailsViewModel> GetAll()
         {
             //throw new NotImplementedException();
-            List<TblLabTests> _labTests = Context.TblLabTests.ToList();
+            List<TblLabTests> _labTests = Context.TblLabTests
+                .Include(t=>t.BiodataNavigation)
+                .ToList();
 
             if (_labTests == null) return null;
 
@@ -64,17 +70,26 @@ namespace Covid19Testing.Repos
         public LabTestDetailsViewModel GetById(object id)
         {
             //throw new NotImplementedException();
-            TblLabTests test = Context.TblLabTests.Find(id);
+            TblLabTests test = Context.TblLabTests
+                .Include(t => t.MethodNavigation)
+                .Include(t => t.BiodataNavigation)
+                .Include(t => t.BiodataNavigation.GenderNavigation)
+                .Include(t => t.TblLabTestsIndicatorsValues)
+                .Include(t => t.TblLabTestsSpecimen)
+                .FirstOrDefault(t => t.Id == (int)id);
+
             if (test != null)
                 return new LabTestDetailsViewModel(test);
 
             throw new NotImplementedException();
         }
 
-        public void Save()
+        public async void Save(LabTestDetailsViewModel obj)
         {
             //throw new NotImplementedException();
             Context.SaveChanges();
+
+            await Context.Entry(obj.LabTest).ReloadAsync();
         }
 
         public void Update(LabTestDetailsViewModel obj)
@@ -97,17 +112,21 @@ namespace Covid19Testing.Repos
                 for (int k = 0; k < test.TblLabTestsIndicatorsValues.Count; k++)
                 {
                     TblLabTestsIndicatorsValues i = test.TblLabTestsIndicatorsValues.ElementAt(k);
+                    i.IndicatorName = obj.Indicators.ElementAt(k).IndicatorName;
                     i.IndicatorValue = obj.Indicators.ElementAt(k).IndicatorValue;
                 }
 
                 for (int k = 0; k < test.TblLabTestsSpecimen.Count; k++)
                 {
                     TblLabTestsSpecimen i = test.TblLabTestsSpecimen.ElementAt(k);
+                    i.SpecimenName = obj.Specimen.ElementAt(k).SpecimenName;
                     i.Checked = obj.Specimen.ElementAt(k).Checked;
                     i.SpecimenOther = obj.Specimen.ElementAt(k).SpecimenOther;
                 }
 
-                Save();
+                obj.LabTest = test;
+
+                Save(obj);
             }
             else if(test!=null && test.Method!=obj.LabTest.Method){
                 throw new Exception("Method already set. Cannot be changed.");

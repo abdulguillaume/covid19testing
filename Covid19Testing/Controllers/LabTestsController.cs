@@ -9,6 +9,20 @@ using Covid19Testing.Models;
 using Covid19Testing.IRepos;
 using PagedList.Core;
 using Covid19Testing.ViewModels;
+using Covid19Testing.Utils;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.Http;
+
+
+using Syncfusion.DocIO;
+using Syncfusion.DocIO.DLS;
+using System.IO;
+
+
+using Syncfusion.Pdf;
+using Syncfusion.Pdf.Barcode;
+using Syncfusion.Drawing;
+using Syncfusion.DocIORenderer;
 
 namespace Covid19Testing.Controllers
 {
@@ -19,17 +33,26 @@ namespace Covid19Testing.Controllers
         private readonly ILabTestRepos tests;
         private readonly IBiodataRepos biodata;
         private readonly IMethodRepos methods;
+        private readonly ITestIndicatorRepos indicators;
 
         //private readonly ITestIndicatorRepos indicators;
         private readonly ISpecimenRepos specimen;
 
         const int _pageSize = 20;
 
-        public LabTestsController(ILabTestRepos _tests, IBiodataRepos _biodata, IMethodRepos _methods)//Covid19TestingContext context)
+        private readonly List<SelectListItem> results = new List<SelectListItem>
+            {
+                new SelectListItem{ Text="Positive", Value = "1" },
+                new SelectListItem{ Text="Negative", Value = "2" },
+            };
+
+        public LabTestsController(ILabTestRepos _tests, ITestIndicatorRepos _indicators,ISpecimenRepos _specimen, IBiodataRepos _biodata, IMethodRepos _methods)//Covid19TestingContext context)
         {
             tests = _tests;
             biodata = _biodata;
             methods = _methods;
+            indicators = _indicators;
+            specimen = _specimen;
         }
 
         // GET: LabTests
@@ -38,6 +61,7 @@ namespace Covid19Testing.Controllers
             //var covid19TestingContext = _context.TblLabTests.Include(t => t.BiodataNavigation).Include(t => t.MethodNavigation);
 
             //return View(await covid19TestingContext.ToListAsync());
+            HttpContext.Session.SetString("biodata_details_token", "");
 
             PagedList<LabTestDetailsViewModel> model = new PagedList<LabTestDetailsViewModel>(tests.GetAll().AsQueryable(), 1, _pageSize);
 
@@ -56,27 +80,275 @@ namespace Covid19Testing.Controllers
                 .Include(t => t.BiodataNavigation)
                 .Include(t => t.MethodNavigation)
                 .FirstOrDefaultAsync(m => m.Id == id);*/
+
             if (LabTest == null)
             {
                 return NotFound();
             }
 
+            HttpContext.Session.SetString("biodata_details_token", "");
+
+            var _indicators = indicators.GetAll();
+
+            foreach (var i in LabTest.Indicators)
+            {
+                i.IndicatorName = _indicators.FirstOrDefault(x => x.Id == i.Indicator).IndicatorName;
+            }
+
+            var _specimen = specimen.GetAll();
+
+            foreach (var s in LabTest.Specimen)
+            {
+                s.SpecimenName = _specimen.FirstOrDefault(x => x.Id == s.Specimen).Type;
+            }
+
             return View(LabTest);
         }
 
-        // GET: LabTests/Create
-        public IActionResult Create(int _bio)
+        [HttpGet]
+        public async Task<IActionResult> GenerateDocument(int Id)
         {
-            TblBiodata _Biodata = biodata.GetById(_bio);
+            var LabTest = tests.GetById(Id);
+
+            if (LabTest == null)
+            {
+                return NotFound();
+            }
+
+            //Loads or opens an existing word document through Open method of WordDocument class
+            Stream fs = new FileStream("Templates/result.docx", FileMode.Open, FileAccess.Read, FileShare.Read);
+
+            WordDocument document = new WordDocument(fs, FormatType.Docx);
+            if(document.Sections.Count<1)throw new Exception("Result template empty. Please contact your Application support.");
+            IWSection section = document.Sections[0];
+
+            IWTable table = section.Tables[0];
+
+            WParagraph p = (WParagraph)table.Rows[0].Cells[1].ChildEntities[0];
+            p.AppendText(LabTest.BioData.Fullname);
+
+            p = (WParagraph)table.Rows[1].Cells[1].ChildEntities[0];
+            string gardian = LabTest.BioData.LegalGardianName;
+            gardian = string.IsNullOrEmpty(gardian) ? "-" : gardian;
+            p.AppendText(gardian);
+
+            p = (WParagraph)table.Rows[2].Cells[1].ChildEntities[0];
+            p.AppendText(LabTest.BioData.Dateofbirth.ToShortDateString());
+
+            //skip 3
+            
+
+            Repos.GenderRepos genders = new Repos.GenderRepos();
+
+
+            int g_id = 1;
+            foreach (var g in genders.GetAll())
+            {
+                string tmp = g.Gender.Substring(0, 2).Trim().Trim('=');
+                try
+                {
+                    p = (WParagraph)table.Rows[3].Cells[g_id].ChildEntities[0];
+                    WCheckBox checkbox = p.AppendCheckBox();
+
+                    if (LabTest.BioData.Gender == g_id)
+                        checkbox.Checked = true;
+
+                    p.AppendText(" " + tmp);
+
+                    g_id++;
+
+                }
+                catch {
+
+                }
+                
+            }
+
+            p = (WParagraph)table.Rows[4].Cells[1].ChildEntities[0];
+            p.AppendText(LabTest.BioData.EpidNo);
+
+            //skip 5 for local phone number
+
+            p = (WParagraph)table.Rows[6].Cells[1].ChildEntities[0];
+            p.AppendText(LabTest.BioData.HomePhone);
+
+            p = (WParagraph)table.Rows[7].Cells[1].ChildEntities[0];
+            p.AppendText(LabTest.BioData.ResidentialAddress);
+            
+            //next table
+            table = section.Tables[1];
+
+            p = (WParagraph)table.Rows[0].Cells[1].ChildEntities[0];
+            p.AppendText(LabTest.LabTest.MethodNavigation.Methodname);
+
+            int k = 1;
+
+            var _indicators = indicators.GetAll();
+
+            foreach (var i in LabTest.Indicators)
+            {
+                var iname = _indicators.FirstOrDefault(x => x.Id == i.Indicator).IndicatorName;
+
+                p = (WParagraph)table.Rows[k].Cells[0].ChildEntities[0];
+                p.AppendText(iname);
+
+                p = (WParagraph)table.Rows[k].Cells[1].ChildEntities[0];
+                p.AppendText(i.IndicatorValue.Value.ToString());
+
+                k++;
+            }
+
+            
+
+            /*Dictionary<int, string> _dict = new Dictionary<int, string> {
+                { 1, "POSITIVE"},
+                { 2, "NEGATIVE"},
+                { 97, "NO RESULT"}
+            };*/
+            var p1= (WParagraph)table.Rows[k].Cells[0].ChildEntities[0];
+
+            p = (WParagraph)table.Rows[k].Cells[1].ChildEntities[0];
+            WCheckBox checkbox1 = p.AppendCheckBox();
+            if (LabTest.LabTest.Interpretation == 2)
+            {
+                checkbox1.Checked = true;
+                p1.AppendText("INTERPRETATION: NEGATIVE RESULT");
+            }
+            else if(LabTest.LabTest.Interpretation > 2 ) {
+                p1.AppendText("INTERPRETATION: UNKNOWN");
+            }
+                
+            p.AppendText(" NEGATIVE");
+
+            p = (WParagraph)table.Rows[k+1].Cells[1].ChildEntities[0];
+            checkbox1 = p.AppendCheckBox();
+            if (LabTest.LabTest.Interpretation == 1)
+            {
+                checkbox1.Checked = true;
+                p1.AppendText("INTERPRETATION: POSITIVE RESULT");
+            }
+                
+            p.AppendText(" POSITIVE");
+
+            //next table
+            table = section.Tables[2];
+
+            DateTime d1 = DateTime.Today;               // any date will do
+
+            p = (WParagraph)table.Rows[0].Cells[1].ChildEntities[0];
+            p.AppendText(LabTest.LabTest.TestingDate.Value.ToString("dd/MMM/yyyy"));
+
+            p = (WParagraph)table.Rows[1].Cells[1].ChildEntities[0];
+            TimeSpan t = LabTest.LabTest.TestingTime.Value;
+            string chg = (d1 + t).ToString("hh:mm tt");
+            p.AppendText(chg);
+
+            p = (WParagraph)table.Rows[2].Cells[1].ChildEntities[0];
+            p.AppendText(LabTest.LabTest.ReportingDate.Value.ToString("dd/MMM/yyyy"));
+
+            p = (WParagraph)table.Rows[3].Cells[1].ChildEntities[0];
+            t = LabTest.LabTest.ReportingTime.Value;
+            chg = (d1 + t).ToString("hh:mm tt");
+            p.AppendText(chg);
+
+            //next table
+            table = section.Tables[3];
+
+            Repos.SpecimenRepos _specimen = new Repos.SpecimenRepos();
+
+            k = 1;
+            foreach (var s in LabTest.Specimen)
+            {
+                bool other = s.Specimen == 99;
+
+                var sname = _specimen.GetById(s.Specimen).Type;
+                p = (WParagraph)table.Rows[k].Cells[0].ChildEntities[0];
+
+                IWTextRange textRange =p.AppendText(sname+(other?" (Specify)":""));
+                textRange.CharacterFormat.FontSize = 8;
+
+
+                p.ApplyStyle(BuiltinStyle.BlockText);
+                p = (WParagraph)table.Rows[k].Cells[1].ChildEntities[0];
+                if (other && !string.IsNullOrEmpty(s.SpecimenOther))
+                {
+                    textRange =p.AppendText(s.SpecimenOther);
+                    textRange.CharacterFormat.FontSize = 10;
+                } 
+
+                p = (WParagraph)table.Rows[k].Cells[2].ChildEntities[0];
+                checkbox1 = p.AppendCheckBox();
+                if (s.Checked)
+                    checkbox1.Checked = true;
+
+                k++;
+            }
+
+
+            //
+            //table = section.Tables[1];
+            // p = (WParagraph)table.Rows[6].Cells[1].ChildEntities[0];
+            //p.AppendText(LabTest.BioData.ResidentialAddress);
+
+
+            DocIORenderer render = new DocIORenderer();
+            //Converts Word document to PDF.
+            PdfDocument pdfDocument = render.ConvertToPDF(document);
+            //Release the resources used by the Word document and DocIO Renderer objects.
+
+            render.Dispose();
+            document.Dispose();
+
+            //add barcode
+            PdfQRBarcode barcode = new PdfQRBarcode();
+            barcode.ErrorCorrectionLevel = PdfErrorCorrectionLevel.High;
+            //Set XDimension
+            barcode.XDimension = 2.5f;
+            barcode.Text = "https://dtm.iom.int/";
+            //Creating new PDF Document
+            //PdfDocument doc = new PdfDocument();
+            //Adding new page to PDF document
+            PdfPage page = pdfDocument.Pages[0];
+            //Printing barcode on to the Pdf. 
+            //barcode.Draw(page, new PointF(25, 70));
+            barcode.Draw(page, new PointF(250, 650));
+
+            MemoryStream stream = new MemoryStream();
+            //document.Save(stream, FormatType.Docx);
+            pdfDocument.Save(stream);
+            //return File(stream, "application/msword", "Sample.docx");
+            return File(stream.ToArray(), "application/octet-stream", "Draft.pdf");
+            //return RedirectToAction(nameof(Index));
+        }
+
+            // GET: LabTests/Create
+            public IActionResult Create(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var token = HttpContext.Session.GetString("biodata_details_token");
+
+            if(string.IsNullOrEmpty(token))
+                return RedirectToAction(nameof(Index), "Biodata");
+
+
+            TblBiodata _Biodata = biodata.GetById(id);
 
             LabTestDetailsViewModel _labTest = new LabTestDetailsViewModel(_Biodata, methods, specimen);
+
+            ViewData["Results"] = results;
 
             ViewData["Method"] = new SelectList(methods.GetAll(), "Id", "Methodname");
 
             /* ViewData["Biodata"] = new SelectList(_context.TblBiodata, "Id", "Fullname");
              ViewData["Method"] = new SelectList(_context.TlkpTestMethods, "Id", "InsertBy");*/
-            return View();
+            return View(_labTest);
         }
+
+        //string admin = "admin";
 
         // POST: LabTests/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -87,35 +359,65 @@ namespace Covid19Testing.Controllers
         {
             if (ModelState.IsValid)
             {
+                _labTest.LabTest.TblLabTestsIndicatorsValues = _labTest.Indicators;
+                _labTest.LabTest.TblLabTestsSpecimen = _labTest.Specimen;
                 tests.Create(_labTest);
                 //_context.Add(tblLabTests);
                 //await _context.SaveChangesAsync();
+                HttpContext.Session.SetString("biodata_details_token", "");
+
                 return RedirectToAction(nameof(Index));
             }
+
+            ViewData["Results"] = results;
 
             ViewData["Method"] = new SelectList(methods.GetAll(), "Id", "Methodname");
             /*ViewData["Biodata"] = new SelectList(_context.TblBiodata, "Id", "Fullname", tblLabTests.Biodata);
             ViewData["Method"] = new SelectList(_context.TlkpTestMethods, "Id", "InsertBy", tblLabTests.Method);*/
+            TblBiodata _Biodata = biodata.GetById(_labTest.BioData.Id);
+            _labTest.BioData = _Biodata;
             return View(_labTest);
         }
 
         // GET: LabTests/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            return NotFound();
-            /*if (id == null)
+
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var tblLabTests = await _context.TblLabTests.FindAsync(id);
-            if (tblLabTests == null)
+            var LabTest = tests.GetById(id);
+
+            if (LabTest == null)
             {
                 return NotFound();
             }
-            ViewData["Biodata"] = new SelectList(_context.TblBiodata, "Id", "Fullname", tblLabTests.Biodata);
-            ViewData["Method"] = new SelectList(_context.TlkpTestMethods, "Id", "InsertBy", tblLabTests.Method);
-            return View(tblLabTests);*/
+
+            HttpContext.Session.SetString("biodata_details_token", "");
+
+
+            var _indicators = indicators.GetAll();
+
+            foreach (var i in LabTest.Indicators)
+            {
+                i.IndicatorName = _indicators.FirstOrDefault(x => x.Id == i.Indicator).IndicatorName;
+            }
+
+            var _specimen = specimen.GetAll();
+
+            foreach (var s in LabTest.Specimen)
+            {
+                s.SpecimenName = _specimen.FirstOrDefault(x => x.Id == s.Specimen).Type;
+            }
+
+            ViewData["Results"] = results;
+            ViewData["Method"] = new SelectList(methods.GetAll(), "Id", "Methodname");
+
+            //ViewData["Indicators"] = new SelectList(indicators.GetAll(), "Id", "IndicatorName"); ;
+
+            return View(LabTest);
         }
 
         // POST: LabTests/Edit/5
@@ -123,11 +425,10 @@ namespace Covid19Testing.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Biodata,Method,Interpretation,TestingDate,TestingTime,ReportingDate,ReportingTime,InsertTime,InsertBy,UpdateTime,UpdateBy")] TblLabTests tblLabTests)
+        public async Task<IActionResult> Edit(int id, LabTestDetailsViewModel test)
         {
-            return NotFound();
-            /*
-            if (id != tblLabTests.Id)
+            
+            if (id != test.LabTest.Id)
             {
                 return NotFound();
             }
@@ -136,12 +437,13 @@ namespace Covid19Testing.Controllers
             {
                 try
                 {
-                    _context.Update(tblLabTests);
-                    await _context.SaveChangesAsync();
+                    tests.Update(test);
+                    /*_context.Update(tblLabTests);
+                    await _context.SaveChangesAsync();*/
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!TblLabTestsExists(tblLabTests.Id))
+                    if (!TblLabTestsExists(test.LabTest.Id))
                     {
                         return NotFound();
                     }
@@ -152,14 +454,17 @@ namespace Covid19Testing.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["Biodata"] = new SelectList(_context.TblBiodata, "Id", "Fullname", tblLabTests.Biodata);
-            ViewData["Method"] = new SelectList(_context.TlkpTestMethods, "Id", "InsertBy", tblLabTests.Method);
-            return View(tblLabTests);*/
+
+            ViewData["Results"] = results;
+            ViewData["Method"] = new SelectList(methods.GetAll(), "Id", "Methodname");
+
+            return View(test);
         }
 
         // GET: LabTests/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            HttpContext.Session.SetString("biodata_details_token", "");
             return NotFound();
             /*if (id == null)
             {
@@ -192,6 +497,35 @@ namespace Covid19Testing.Controllers
         private bool TblLabTestsExists(int id)
         {
             return tests.GetById(id) != null;
+        }
+
+        public ActionResult GetLabTestIndicators(int _method)
+        {
+            ActionResponse response = new ActionResponse { };
+            try
+            {
+                List<TblLabTestsIndicatorsValues> Indicators = new List<TblLabTestsIndicatorsValues>();
+
+                foreach (var i in methods.GetById(_method).TlkpTestIndicators)
+                {
+                    TblLabTestsIndicatorsValues v = new TblLabTestsIndicatorsValues();
+                    v.Indicator = i.Id;
+                    v.Method = _method;
+                    v.IndicatorName = i.IndicatorName;
+
+                    Indicators.Add(v);
+                }
+
+                response.IsSuccessful = true;
+                response.Message = "n/a";
+                response.JSONData = JsonConvert.SerializeObject(Indicators);
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccessful = false;
+                response.Message = "n/a";
+            }
+            return Json(response, new JsonSerializerSettings());
         }
     }
 }

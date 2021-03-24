@@ -34,7 +34,7 @@ namespace Covid19Testing.Repos
         public IEnumerable<TlkpGenders> GetAll()
         {
             //throw new NotImplementedException();
-            return Context.TlkpGenders;
+            return Context.TlkpGenders.OrderBy(g=>g.Id);
         }
 
 
@@ -44,7 +44,7 @@ namespace Covid19Testing.Repos
             return Context.TlkpGenders.Find(id);
         }
 
-        public void Save()
+        public void Save(TlkpGenders obj)
         {
             throw new NotImplementedException();
         }

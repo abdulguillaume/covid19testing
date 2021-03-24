@@ -1,95 +1,132 @@
-﻿@model IEnumerable<Covid19Testing.Models.TblLabTests>
+﻿@*@model IEnumerable<Covid19Testing.Models.TblLabTests>*@
+
+@model PagedList.Core.IPagedList<Covid19Testing.ViewModels.LabTestDetailsViewModel>
+@addTagHelper *, PagedList.Core.Mvc
 
 @{
     ViewData["Title"] = "Index";
+    DateTime dt = DateTime.Now;
 }
 
-<h2>Index</h2>
+<h2>COVID-19 TESTING RESULTs</h2>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+@*<p align="right">
+    <a asp-action="Index" asp-controller="Biodata">Biodata Search Page</a>
+</p>*@
+
 <table class="table">
     <thead>
         <tr>
+
             <th>
-                @Html.DisplayNameFor(model => model.Interpretation)
+                EPID-No
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TestingDate)
+                Testing date
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TestingTime)
+                Testing time
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ReportingDate)
+                Interpretation
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ReportingTime)
+                Reporting date
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.InsertTime)
+                Reporting time
             </th>
+
             <th>
-                @Html.DisplayNameFor(model => model.InsertBy)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UpdateTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UpdateBy)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BiodataNavigation)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MethodNavigation)
+                Status
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+        @foreach (var item in Model)
+        {
+            string testing = (dt + @item.LabTest.TestingTime.Value).ToString("hh:mm tt");
+            string reporting = "";
+            if (@item.LabTest.ReportingDate != null)
+            {
+                reporting = (dt + @item.LabTest.ReportingTime.Value).ToString("hh:mm tt");
+            }
+
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Interpretation)
+                @Html.DisplayFor(modelItem => item.BioData.EpidNo)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.TestingDate)
+                @item.LabTest.TestingDate.Value.ToString("dd/MMM/yy")
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.TestingTime)
+                @Html.DisplayFor(modelItem => testing)
+            </td>
+            @{
+                //"lightskyblue"
+                string @style = (item.LabTest.Interpretation == 1) ? "red" : (item.LabTest.Interpretation == 2) ? "greenyellow" : "lightgray";
+            }
+            <td style="background-color: @style ">
+                @if (item.LabTest.Interpretation == 97)
+                {
+                    @Html.Raw("NO RESULT")
+                }
+                else if (item.LabTest.Interpretation == 1)
+                {
+                    @Html.Raw("POSITIVE")
+                }
+                else if (item.LabTest.Interpretation == 2)
+                {
+                    @Html.Raw("NEGATIVE")
+                }
+                else
+                {
+                    @Html.Raw("-")
+                }
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ReportingDate)
+                @if (item.LabTest.ReportingDate == null)
+                {
+                    @Html.Raw("-")
+                }
+                else
+                {
+                    @item.LabTest.ReportingDate.Value.ToString("dd/MMM/yy")
+                }
+
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ReportingTime)
+                @if (item.LabTest.ReportingTime == null)
+                {
+                    @Html.Raw("-")
+                }
+                else
+                {
+                    @Html.DisplayFor(modelItem => reporting)
+                }
+            </td>
+
+            <td>
+                @if (item.LabTest.Interpretation != 97)
+                {
+                    @Html.Raw("PENDING")
+                }
+                else if (item.LabTest.Approved.HasValue && item.LabTest.Approved.Value)
+                {
+                    @Html.Raw("APPROVED")
+                }
+                else
+                {
+                    @Html.Raw("-");
+                }
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.InsertTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.InsertBy)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UpdateTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UpdateBy)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BiodataNavigation.Fullname)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MethodNavigation.InsertBy)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.LabTest.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.LabTest.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.LabTest.Id">Delete</a>
             </td>
         </tr>
-}
+        }
     </tbody>
 </table>

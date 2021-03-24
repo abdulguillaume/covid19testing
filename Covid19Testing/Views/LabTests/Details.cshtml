@@ -1,84 +1,238 @@
-﻿@model Covid19Testing.Models.TblLabTests
+﻿@model Covid19Testing.ViewModels.LabTestDetailsViewModel
 
 @{
     ViewData["Title"] = "Details";
 }
 
-<h2>Details</h2>
+<h2>COVID-19 TESTING FORM</h2>
+
+<div align="right">
+    <a asp-action="Edit" asp-route-id="@Model.LabTest.Id">Edit</a> |
+    <a asp-action="Index">COVID-19 TESTING RESULTs</a>
+
+    <form asp-action="GenerateDocument" method="get">
+        <input type="hidden" name="Id" value="@Model.LabTest.Id" />
+        <input type="submit" value="Generate Word" class="btn btn-default" />
+    </form>
+
+</div>
 
 <div>
-    <h4>TblLabTests</h4>
+    <h4>Biodata</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.Interpretation)
+            @Html.DisplayNameFor(model => model.BioData.Fullname)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Interpretation)
+            @Html.DisplayFor(model => model.BioData.Fullname)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.TestingDate)
+            @Html.DisplayNameFor(model => model.BioData.LegalGardianName)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.TestingDate)
+            @Html.DisplayFor(model => model.BioData.LegalGardianName)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.TestingTime)
+            @Html.DisplayNameFor(model => model.BioData.Dateofbirth)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.TestingTime)
+            @Model.BioData.Dateofbirth.ToString("dd/MMM/yy")
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.ReportingDate)
+            @Html.DisplayNameFor(model => model.BioData.GenderNavigation.Gender)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.ReportingDate)
+            @Html.DisplayFor(model => model.BioData.GenderNavigation.Gender)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.ReportingTime)
+            @Html.DisplayNameFor(model => model.BioData.EpidNo)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.ReportingTime)
+            @Html.DisplayFor(model => model.BioData.EpidNo)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.InsertTime)
+            @Html.DisplayNameFor(model => model.BioData.LocalPhone)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.InsertTime)
+            @Html.DisplayFor(model => model.BioData.LocalPhone)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.InsertBy)
+            @Html.DisplayNameFor(model => model.BioData.HomePhone)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.InsertBy)
+            @Html.DisplayFor(model => model.BioData.HomePhone)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.UpdateTime)
+            @Html.DisplayNameFor(model => model.BioData.ResidentialAddress)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.UpdateTime)
+            @Html.DisplayFor(model => model.BioData.ResidentialAddress)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.UpdateBy)
+            @Html.DisplayNameFor(model => model.BioData.InsertTime)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.UpdateBy)
+            @Html.DisplayFor(model => model.BioData.InsertTime)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.BiodataNavigation)
+            @Html.DisplayNameFor(model => model.BioData.InsertBy)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.BiodataNavigation.Fullname)
+            @Html.DisplayFor(model => model.BioData.InsertBy)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.MethodNavigation)
+            @Html.DisplayNameFor(model => model.BioData.UpdateTime)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.MethodNavigation.InsertBy)
+            @Html.DisplayFor(model => model.BioData.UpdateTime)
         </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.BioData.UpdateBy)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BioData.UpdateBy)
+        </dd>
+
     </dl>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+@{ 
+    DateTime dt = DateTime.Today;
+    string testing = (dt + @Model.LabTest.TestingTime.Value).ToString("hh:mm tt");
+    string reporting = "";
+    if (@Model.LabTest.ReportingDate != null)
+    {
+        reporting = (dt + @Model.LabTest.ReportingTime.Value).ToString("hh:mm tt");
+    }
+}
+
+
+<h4>Test</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.LabTest.Method)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.LabTest.MethodNavigation.Methodname)
+            </dd>
+
+            @foreach (var i in Model.LabTest.TblLabTestsIndicatorsValues)
+            {
+                <dt>
+                    @Html.DisplayFor(model => i.IndicatorName)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => i.IndicatorValue)
+                </dd>
+            }
+
+            <dt>
+                @Html.DisplayNameFor(model => model.LabTest.TestingDate)
+            </dt>
+            <dd>
+                @Model.LabTest.TestingDate.Value.ToString("dd/MMM/yy")
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.LabTest.TestingTime)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => testing)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.LabTest.Interpretation)
+            </dt>
+            <dd>
+                @if (@Model.LabTest.Interpretation == 97)
+                {
+                    @Html.Raw("NO RESULT")
+                }
+                else if (@Model.LabTest.Interpretation == 1)
+                {
+                    @Html.Raw("POSITIVE")
+                }
+                else if (@Model.LabTest.Interpretation == 2)
+                {
+                    @Html.Raw("NEGATIVE")
+                }
+                else
+                {
+                    @Html.Raw("-")
+                }
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.LabTest.ReportingDate)
+            </dt>
+            <dd>
+               @if (Model.LabTest.ReportingDate != null)
+               {
+                   @Model.LabTest.ReportingDate.Value.ToString("dd/MMM/yy")
+               }
+               else {
+                   @Html.Raw("-");
+               }
+                
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.LabTest.ReportingTime)
+            </dt>
+            <dd>
+                @if (Model.LabTest.ReportingDate != null)
+                {
+                    @Html.DisplayFor(model =>reporting)
+                }
+                else
+                {
+                    @Html.Raw("-");
+                }
+
+            </dd>
+
+        </dl>
+
+
+        <hr />
+        <h4 align="center">OFFICIAL USE ONLY</h4>
+
+        <table>
+            @foreach (var s in @Model.Specimen)
+            {
+                <tr>
+                    <td>
+                        <label class="control-label">@s.SpecimenName</label>
+                    </td>
+                    <td> @Html.CheckBoxFor(model => s.Checked, new { @disabled = "disabled" })</td>
+                    <td>
+
+                        @if (s.Checked && s.Specimen == 99)
+                        {
+                            <label class="control-label">Specify:</label>
+
+                            @Html.DisplayFor(model => s.SpecimenOther)
+
+                        }
+
+                    </td>
+                </tr>
+
+
+                
+
+            }
+        </table>
+        
+
+
 </div>
+</div>
+
+
+

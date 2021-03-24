@@ -22,10 +22,10 @@
             @Html.DisplayFor(model => model.LegalGardianName)
         </dd>
         <dt>
-            @Model.Dateofbirth.ToShortDateString()
+            @Html.DisplayNameFor(model => model.Dateofbirth)
         </dt>
         <dd>
-            @Model.Dateofbirth.ToShortDateString()
+            @Model.Dateofbirth.ToString("dd/MMM/yy")
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.GenderNavigation.Gender)
@@ -38,6 +38,12 @@
         </dt>
         <dd>
             @Html.DisplayFor(model => model.EpidNo)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.LocalPhone)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LocalPhone)
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.HomePhone)
@@ -79,6 +85,15 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit Biodata</a> |
+    <a asp-action="Index">Biodata Search Page</a> |
+    @*<a asp-action="Create" asp-controller="LabTests" asp-route-id="@Model.Id">COVID-19 TESTING FORM</a>*@
+
+    <form method="get" asp-action="Create" asp-controller="LabTests">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Create New" class="btn btn-default" /> |
+        COVID-19 TESTING FORM
+    </form>
+
+
 </div>

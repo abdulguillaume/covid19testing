@@ -26,13 +26,15 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">Covid19Testing</a>
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">U.N. Covid19 Isolation Center</a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
+                    <li><a asp-area="" asp-controller="Biodata" asp-action="Index">Biodata</a></li>
+                    <li><a asp-area="" asp-controller="Labtests" asp-action="Index">Tests Results</a></li>
+                    @*<li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
+        <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>*@
                 </ul>
             </div>
         </div>
@@ -43,8 +45,8 @@
     <div class="container body-content">
         @RenderBody()
         <hr />
-        <footer>
-            <p>&copy; 2021 - Covid19Testing</p>
+        <footer align="center">
+            <p>&copy; 2021 - IOM HMAC</p>
         </footer>
     </div>
 

@@ -9,9 +9,9 @@ namespace Covid19Testing.Models
         public int Labtest { get; set; }
         public int Specimen { get; set; }
         public string SpecimenOther { get; set; }
-        public DateTime InsertTime { get; set; }
+        public DateTime? InsertTime { get; set; }
         public string InsertBy { get; set; }
-        public DateTime UpdateTime { get; set; }
+        public DateTime? UpdateTime { get; set; }
         public string UpdateBy { get; set; }
         public bool Checked { get; set; }
 
