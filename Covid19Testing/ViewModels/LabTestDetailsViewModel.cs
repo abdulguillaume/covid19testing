@@ -42,6 +42,7 @@ namespace Covid19Testing.ViewModels
             Specimen = new List<TblLabTestsSpecimen>();
 
             LabTest = new TblLabTests();
+            LabTest.Approved = false;
             LabTest.Biodata = _BioData.Id;
             //LabTest.Method = _method.Id;
 

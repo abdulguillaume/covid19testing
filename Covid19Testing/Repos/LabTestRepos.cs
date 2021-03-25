@@ -12,9 +12,9 @@ namespace Covid19Testing.Repos
 {
     public class LabTestRepos : ILabTestRepos
     {
-        public LabTestRepos()
+        public LabTestRepos(Covid19TestingContext _Context)
         {
-            Context = new Covid19TestingContext();
+            Context = _Context;// new Covid19TestingContext();
         }
 
         public Covid19TestingContext Context { get; }
@@ -33,6 +33,8 @@ namespace Covid19Testing.Repos
 
             if (test.Method == 0)
                 throw new Exception("Select Method.");
+
+            test.Approved = false;
 
             Context.TblLabTests.Add(test);
 
@@ -84,12 +86,12 @@ namespace Covid19Testing.Repos
             throw new NotImplementedException();
         }
 
-        public async void Save(LabTestDetailsViewModel obj)
+        public void Save(LabTestDetailsViewModel obj)
         {
             //throw new NotImplementedException();
             Context.SaveChanges();
 
-            await Context.Entry(obj.LabTest).ReloadAsync();
+            Context.Entry(obj.LabTest).Reload();
         }
 
         public void Update(LabTestDetailsViewModel obj)
@@ -98,7 +100,10 @@ namespace Covid19Testing.Repos
 
             //LabTestDetailsViewModel test = new LabTestDetailsViewModel(obj);//GetById(obj.LabTest.Id);
 
-            TblLabTests test = Context.TblLabTests.Find(obj.LabTest.Id);
+            TblLabTests test = Context.TblLabTests
+                .Include(t=>t.TblLabTestsIndicatorsValues)
+                .Include(t=>t.TblLabTestsSpecimen)
+                .FirstOrDefault(t=>t.Id==obj.LabTest.Id);
 
             if (test != null)
             {
@@ -107,6 +112,9 @@ namespace Covid19Testing.Repos
                 test.TestingTime = obj.LabTest.TestingTime;
                 test.ReportingDate = obj.LabTest.ReportingDate;
                 test.ReportingTime = obj.LabTest.ReportingTime;
+                test.UpdateBy = obj.LabTest.UpdateBy;
+                test.Approved = obj.LabTest.Approved;
+                if (test.Approved == null) test.Approved = false;
 
                 //test.Update(obj); //do i really need it.
                 for (int k = 0; k < test.TblLabTestsIndicatorsValues.Count; k++)

@@ -5,13 +5,15 @@ using System.Threading.Tasks;
 using Covid19Testing.IRepos;
 using Covid19Testing.Models;
 using Covid19Testing.Repos;
+using Covid19Testing.Utils;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Server.HttpSys;
+using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,22 +43,26 @@ namespace Covid19Testing
                 options.IdleTimeout = TimeSpan.FromMinutes(1);
             });
 
-            //add on march 24, 2021
-            services.AddAuthentication(HttpSysDefaults.AuthenticationScheme);
+            services.AddScoped<IClaimsTransformation, DbClaim>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            
+            services.AddDbContext<Covid19TestingContext>(options => options.UseSqlServer(
+                 Configuration.GetConnectionString("DefaultConnection")
+               ));
+
+            //services.AddScoped<Covid19TestingContext>();
 
             //services.AddSession()
 
-            services.AddSingleton<ISpecimenRepos , SpecimenRepos>();
-            services.AddSingleton<ITestIndicatorRepos, TestIndicatorRepos>();//
-            services.AddSingleton<IMethodRepos, MethodRepos>();
+            services.AddScoped<IGenderRepos, GenderRepos>();
+            services.AddScoped<ISpecimenRepos , SpecimenRepos>();
+            services.AddScoped<ITestIndicatorRepos, TestIndicatorRepos>();//
+            services.AddScoped<IMethodRepos, MethodRepos>();
 
-            services.AddSingleton<IBiodataRepos, BiodataRepos>();
+            services.AddScoped<IBiodataRepos, BiodataRepos>();
 
-            services.AddSingleton<ILabTestRepos, LabTestRepos>();
+            services.AddScoped<ILabTestRepos, LabTestRepos>();
 
             //ILabTestRepos
 

@@ -34,8 +34,9 @@
                     <li><a asp-area="" asp-controller="Biodata" asp-action="Index">Biodata</a></li>
                     <li><a asp-area="" asp-controller="Labtests" asp-action="Index">Tests Results</a></li>
                     @*<li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
-        <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>*@
+            <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>*@
                 </ul>
+                <p class="nav navbar-text navbar-right">Hello, @User.Identity.Name!</p>
             </div>
         </div>
     </nav>

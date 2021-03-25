@@ -34,6 +34,7 @@ namespace Covid19Testing.Controllers
         private readonly IBiodataRepos biodata;
         private readonly IMethodRepos methods;
         private readonly ITestIndicatorRepos indicators;
+        private readonly IGenderRepos genders;
 
         //private readonly ITestIndicatorRepos indicators;
         private readonly ISpecimenRepos specimen;
@@ -46,13 +47,14 @@ namespace Covid19Testing.Controllers
                 new SelectListItem{ Text="Negative", Value = "2" },
             };
 
-        public LabTestsController(ILabTestRepos _tests, ITestIndicatorRepos _indicators,ISpecimenRepos _specimen, IBiodataRepos _biodata, IMethodRepos _methods)//Covid19TestingContext context)
+        public LabTestsController(ILabTestRepos _tests, ITestIndicatorRepos _indicators,ISpecimenRepos _specimen, IBiodataRepos _biodata, IMethodRepos _methods, IGenderRepos _genders)//Covid19TestingContext context)
         {
             tests = _tests;
             biodata = _biodata;
             methods = _methods;
             indicators = _indicators;
             specimen = _specimen;
+            genders = _genders;
         }
 
         // GET: LabTests
@@ -102,7 +104,29 @@ namespace Covid19Testing.Controllers
                 s.SpecimenName = _specimen.FirstOrDefault(x => x.Id == s.Specimen).Type;
             }
 
+            if (LabTest.LabTest.Approved == null)
+                LabTest.LabTest.Approved = false;
+
+            ViewData["Ready"] = Ready4Approval(LabTest.LabTest);
+
             return View(LabTest);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ApproveResult(int Id)
+        {
+            var LabTest = tests.GetById(Id);
+
+            if (LabTest == null)
+            {
+                return NotFound();
+            }
+
+            LabTest.LabTest.Approved = true;
+
+            tests.Update(LabTest);
+
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
@@ -138,7 +162,7 @@ namespace Covid19Testing.Controllers
             //skip 3
             
 
-            Repos.GenderRepos genders = new Repos.GenderRepos();
+            //Repos.GenderRepos genders = new Repos.GenderRepos();
 
 
             int g_id = 1;
@@ -254,14 +278,14 @@ namespace Covid19Testing.Controllers
             //next table
             table = section.Tables[3];
 
-            Repos.SpecimenRepos _specimen = new Repos.SpecimenRepos();
+            //Repos.SpecimenRepos _specimen = new Repos.SpecimenRepos();
 
             k = 1;
             foreach (var s in LabTest.Specimen)
             {
                 bool other = s.Specimen == 99;
 
-                var sname = _specimen.GetById(s.Specimen).Type;
+                var sname = specimen.GetById(s.Specimen).Type;
                 p = (WParagraph)table.Rows[k].Cells[0].ChildEntities[0];
 
                 IWTextRange textRange =p.AppendText(sname+(other?" (Specify)":""));
@@ -361,6 +385,8 @@ namespace Covid19Testing.Controllers
             {
                 _labTest.LabTest.TblLabTestsIndicatorsValues = _labTest.Indicators;
                 _labTest.LabTest.TblLabTestsSpecimen = _labTest.Specimen;
+                _labTest.LabTest.InsertBy =
+                    _labTest.LabTest.UpdateBy = User.Identity.Name;
                 tests.Create(_labTest);
                 //_context.Add(tblLabTests);
                 //await _context.SaveChangesAsync();
@@ -394,6 +420,9 @@ namespace Covid19Testing.Controllers
             {
                 return NotFound();
             }
+
+            if(LabTest.LabTest.Approved!=null && LabTest.LabTest.Approved.Value)
+                return RedirectToAction(nameof(Index));
 
             HttpContext.Session.SetString("biodata_details_token", "");
 
@@ -433,10 +462,18 @@ namespace Covid19Testing.Controllers
                 return NotFound();
             }
 
+
+            //var errors = ModelState.Values;
+            //foreach (var e in errors)
+            //{
+            //        ;
+            //}
+
             if (ModelState.IsValid)
             {
                 try
                 {
+                    test.LabTest.UpdateBy = User.Identity.Name;
                     tests.Update(test);
                     /*_context.Update(tblLabTests);
                     await _context.SaveChangesAsync();*/
@@ -494,9 +531,63 @@ namespace Covid19Testing.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        private bool Ready4Approval(TblLabTests test)
+        {
+            if (test.Approved != null && test.Approved.Value) return true;
+
+            bool condition1 = (test.ReportingDate != null && test.ReportingTime != null);
+            bool condition2 = false, condition3 = false;
+
+            decimal sum = 0;
+
+            foreach (var i in test.TblLabTestsIndicatorsValues)
+            {
+                if (i.IndicatorValue.HasValue)
+                    sum += i.IndicatorValue.Value;
+                else break;
+            }
+
+            if (sum > 0) condition2 = true;
+
+            foreach (var s in test.TblLabTestsSpecimen)
+            {
+                if (s.Checked) {
+                    condition3 = true;break;
+                }
+            }
+
+            return condition1 && condition2 && condition3;
+        }
+
         private bool TblLabTestsExists(int id)
         {
             return tests.GetById(id) != null;
+        }
+
+        public ActionResult GetBiodata(int _id)
+        {
+            ActionResponse response = new ActionResponse { };
+            try
+            {
+                TblBiodata subject =
+                biodata.GetById(_id);
+
+                subject.TblLabTests = null;
+                subject._genderName = subject.GenderNavigation.Gender;
+                subject.GenderNavigation = null;
+                subject._dob = subject.Dateofbirth.ToString("dd/MMM/yy");
+
+                response.IsSuccessful = true;
+                response.Message = "n/a";
+                
+                response.JSONData = JsonConvert.SerializeObject(subject, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccessful = false;
+                response.Message = "n/a";
+            }
+            return Json(response, new JsonSerializerSettings());
         }
 
         public ActionResult GetLabTestIndicators(int _method)

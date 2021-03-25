@@ -107,6 +107,12 @@
         <form asp-action="Create">
 
             <input asp-for="@Model.BioData.Id" class="form-control" type="hidden" />
+            <input asp-for="@Model.BioData.Fullname" class="form-control" type="hidden" />
+            <input asp-for="@Model.BioData.Dateofbirth" class="form-control" type="hidden" />
+            <input asp-for="@Model.BioData.Gender" class="form-control" type="hidden" />
+            <input asp-for="@Model.BioData.EpidNo" class="form-control" type="hidden" />
+            <input asp-for="@Model.BioData.LocalPhone" class="form-control" type="hidden" />
+            <input asp-for="@Model.BioData.ResidentialAddress" class="form-control" type="hidden" />
 
             <input asp-for="@Model.LabTest.Biodata" class="form-control" type="hidden" />
 
@@ -176,7 +182,7 @@
                             }
 
                             @*<input asp-for="InsertTime" class="form-control" />
-                                <span asp-validation-for="InsertTime" class="text-danger"></span>*@
+                        <span asp-validation-for="InsertTime" class="text-danger"></span>*@
                         </td>
                     </tr>
 

@@ -76,10 +76,20 @@
         <form asp-action="Edit">
 
             <input asp-for="@Model.BioData.Id" class="form-control" type="hidden" />
+            <input asp-for="@Model.BioData.Fullname" class="form-control" type="hidden" />
+            <input asp-for="@Model.BioData.Dateofbirth" class="form-control" type="hidden" />
+            <input asp-for="@Model.BioData.Gender" class="form-control" type="hidden" />
+            <input asp-for="@Model.BioData.EpidNo" class="form-control" type="hidden" />
+            <input asp-for="@Model.BioData.LocalPhone" class="form-control" type="hidden" />
+            <input asp-for="@Model.BioData.ResidentialAddress" class="form-control" type="hidden" />
+
+            <input asp-for="@Model.BioData.Id" class="form-control" type="hidden" />
 
             <input asp-for="@Model.LabTest.Biodata" class="form-control" type="hidden" />
 
             <input asp-for="@Model.LabTest.Id" class="form-control" type="hidden" />
+
+            <input asp-for="@Model.LabTest.Approved" class="form-control" type="hidden" />
 
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -147,11 +157,11 @@
 
             <div class="form-group" id="LabTestReportDateTime">
 
-                @if(Model.LabTest.Interpretation!=97)
+                @if (Model.LabTest.Interpretation != 97)
                 {
                     <label asp-for="@Model.LabTest.ReportingDate" class="control-label"></label>
                     <input asp-for="@Model.LabTest.ReportingDate" class="form-control" type="date" />
-                    <label asp-for="@Model.LabTest.ReportingTime" class="control-label" ></label>
+                    <label asp-for="@Model.LabTest.ReportingTime" class="control-label"></label>
                     <input asp-for="@Model.LabTest.ReportingTime" class="form-control" type="time" />
 
                 }
@@ -177,11 +187,12 @@
                                 @Model.Specimen[i].SpecimenName
                             </td>
                             <td>
-                                <input asp-for="@Model.Specimen[i].Checked" type="checkbox" class="specimen_checkbox" data-other="@Model.Specimen[i].Specimen" data-position="@i"/>
+                                <input asp-for="@Model.Specimen[i].Checked" type="checkbox" class="specimen_checkbox" data-other="@Model.Specimen[i].Specimen" data-position="@i" />
                             </td>
                         </tr>
-                            <tr><td colspan="2">
-                                @if ( Model.Specimen[i].Specimen==99)
+                        <tr>
+                            <td colspan="2">
+                                @if (Model.Specimen[i].Specimen == 99)
                                 {
                                     <div id="specimen_other">
 
@@ -195,7 +206,7 @@
                                     </div>
 
                                 }
-                                </td>
+                            </td>
                         </tr>
 
 

@@ -14,13 +14,15 @@ namespace Covid19Testing.Controllers
     {
         private readonly ISpecimenRepos specimen;
         private readonly ITestIndicatorRepos indicators;
+        //private readonly Covid19TestingContext Context;
 
-        public HomeController(ISpecimenRepos _specimen, ITestIndicatorRepos _indicators)
+        public HomeController( ISpecimenRepos _specimen, ITestIndicatorRepos _indicators)
         {
             specimen = _specimen;
             indicators = _indicators;
+           // Context = _Context;
         }
-
+        
         public IActionResult Index()
         {
             return View();

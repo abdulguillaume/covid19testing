@@ -23,6 +23,7 @@ namespace Covid19Testing.Models
         [Required(ErrorMessage = "*", AllowEmptyStrings =false)]
         public int Gender { get; set; }
         [DisplayName("EPID-NO")]
+        [Required(ErrorMessage = "*", AllowEmptyStrings = false)]
         public string EpidNo { get; set; }
         //[Required(ErrorMessage = "*", AllowEmptyStrings = false)]
         [RegularExpression("^(\\+)[0-9]*", ErrorMessage = "Intl. format")]

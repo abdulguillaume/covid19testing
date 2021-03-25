@@ -23,7 +23,16 @@ namespace Covid19Testing.Models
 
     //}
 
-    public partial class TblLabTestsIndicatorsValues
+    public partial class TblBiodata
+    {
+        [NotMapped]
+        public string _genderName { get; set; }
+
+        [NotMapped]
+        public string _dob { get; set; }
+    }
+
+        public partial class TblLabTestsIndicatorsValues
     {
         [NotMapped]
         public string IndicatorName { get; set; }

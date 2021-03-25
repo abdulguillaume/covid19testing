@@ -10,6 +10,7 @@ using Covid19Testing.IRepos;
 using Covid19Testing.Repos;
 using PagedList.Core;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Covid19Testing.Controllers
 {
@@ -18,14 +19,15 @@ namespace Covid19Testing.Controllers
         //private readonly Covid19TestingContext _context;
         private readonly IBiodataRepos biodata;
 
-        readonly GenderRepos genders = new GenderRepos();
+        readonly IGenderRepos genders;//= new GenderRepos();
 
         const int _pageSize = 20;
 
-        public BiodataController(IBiodataRepos _biodata)//Covid19TestingContext context)
+        public BiodataController(IGenderRepos _genders,IBiodataRepos _biodata)//Covid19TestingContext context)
         {
             //_context = context;
             biodata = _biodata;
+            genders = _genders;
         }
 
         [HttpGet]
@@ -76,11 +78,21 @@ namespace Covid19Testing.Controllers
             return View(tblBiodata);
         }
 
+        public int GenerateRandomNo()
+        {
+            int _min = 1000;
+            int _max = 9999;
+            Random _rdm = new Random();
+            return _rdm.Next(_min, _max);
+        }
+
         // GET: Biodata/Create
+        [Authorize]
         public IActionResult Create()
         {
             HttpContext.Session.SetString("biodata_details_token", "");
             ViewData["Gender"] = new SelectList(/*_context.TlkpGenders*/ genders.GetAll(), "Id", "Gender");
+            ViewData["Random"] = "Temp-"+GenerateRandomNo().ToString();
             return View();
         }
 
@@ -89,20 +101,31 @@ namespace Covid19Testing.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Fullname,LegalGardianName,Dateofbirth,Gender,EpidNo,HomePhone,ResidentialAddress,InsertTime,InsertBy,UpdateTime,UpdateBy")] TblBiodata tblBiodata)
+        public async Task<IActionResult> Create([Bind("Id,Fullname,LegalGardianName,Dateofbirth,Gender,EpidNo,LocalPhone,HomePhone,ResidentialAddress,InsertTime,InsertBy,UpdateTime,UpdateBy")] TblBiodata tblBiodata)
         {
-            if (ModelState.IsValid)
+            try
             {
-                biodata.Create(tblBiodata);
-                /*_context.Add(tblBiodata);
-                await _context.SaveChangesAsync();*/
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    tblBiodata.InsertBy = tblBiodata.UpdateBy = User.Identity.Name;
+                    biodata.Create(tblBiodata);
+                    /*_context.Add(tblBiodata);
+                    await _context.SaveChangesAsync();*/
+                    return RedirectToAction(nameof(Index));
+                }
+
             }
+            catch {
+                ViewData["Error"] = "Duplicate EPID-NO";
+                ViewData["Random"] = tblBiodata.EpidNo;
+            }
+            
             ViewData["Gender"] = new SelectList(/*_context.TlkpGenders*/ genders.GetAll(), "Id", "Gender");
             return View(tblBiodata);
         }
 
         // GET: Biodata/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -136,9 +159,11 @@ namespace Covid19Testing.Controllers
             {
                 try
                 {
+                    tblBiodata.UpdateBy = User.Identity.Name;
                     biodata.Update(tblBiodata);
                     /*_context.Update(tblBiodata);
                     await _context.SaveChangesAsync();*/
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -151,7 +176,11 @@ namespace Covid19Testing.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                catch
+                {
+                    ViewData["Error"] = "Duplicate EPID-NO";
+                }
+                //return RedirectToAction(nameof(Index));
             }
             ViewData["Gender"] = new SelectList(/*_context.TlkpGenders*/ genders.GetAll(), "Id", "Gender");
             return View(tblBiodata);

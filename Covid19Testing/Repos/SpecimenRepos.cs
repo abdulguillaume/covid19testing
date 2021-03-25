@@ -9,9 +9,9 @@ namespace Covid19Testing.Repos
 {
     public class SpecimenRepos : ISpecimenRepos
     {
-        public SpecimenRepos()
+        public SpecimenRepos(Covid19TestingContext _Context)
         {
-            Context = new Covid19TestingContext(); 
+            Context = _Context;// new Covid19TestingContext();
         }
 
         public Covid19TestingContext Context { get; }

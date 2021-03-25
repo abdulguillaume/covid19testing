@@ -10,9 +10,9 @@ namespace Covid19Testing.Repos
 {
     public class GenderRepos : IGenderRepos
     {
-        public GenderRepos()
+        public GenderRepos(Covid19TestingContext _Context)
         {
-            Context = new Covid19TestingContext();
+            Context = _Context;// new Covid19TestingContext();
         }
         public Covid19TestingContext Context { get; }
 

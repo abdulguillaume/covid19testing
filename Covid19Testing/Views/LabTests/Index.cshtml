@@ -11,15 +11,15 @@
 <h2>COVID-19 TESTING RESULTs</h2>
 
 @*<p align="right">
-    <a asp-action="Index" asp-controller="Biodata">Biodata Search Page</a>
-</p>*@
+        <a asp-action="Index" asp-controller="Biodata">Biodata Search Page</a>
+    </p>*@
 
 <table class="table">
     <thead>
         <tr>
 
             <th>
-                EPID-No
+                EPID-NO
             </th>
             <th>
                 Testing date
@@ -53,80 +53,219 @@
                 reporting = (dt + @item.LabTest.ReportingTime.Value).ToString("hh:mm tt");
             }
 
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.BioData.EpidNo)
-            </td>
-            <td>
-                @item.LabTest.TestingDate.Value.ToString("dd/MMM/yy")
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => testing)
-            </td>
-            @{
-                //"lightskyblue"
-                string @style = (item.LabTest.Interpretation == 1) ? "red" : (item.LabTest.Interpretation == 2) ? "greenyellow" : "lightgray";
-            }
-            <td style="background-color: @style ">
-                @if (item.LabTest.Interpretation == 97)
-                {
-                    @Html.Raw("NO RESULT")
+            <tr>
+                <td>
+
+                    <a  data-toggle="modal" data-target="#show-biodata" class="biodatalink" data-id="@item.BioData.Id">
+                        @Html.DisplayFor(modelItem => item.BioData.EpidNo)
+                    </a>
+
+
+                </td>
+                <td>
+                    @item.LabTest.TestingDate.Value.ToString("dd/MMM/yy")
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => testing)
+                </td>
+                @{
+                    //"lightskyblue"
+                    string @style = (item.LabTest.Interpretation == 1) ? "red" : (item.LabTest.Interpretation == 2) ? "greenyellow" : "lightgray";
                 }
-                else if (item.LabTest.Interpretation == 1)
-                {
-                    @Html.Raw("POSITIVE")
-                }
-                else if (item.LabTest.Interpretation == 2)
-                {
-                    @Html.Raw("NEGATIVE")
-                }
-                else
-                {
-                    @Html.Raw("-")
-                }
-            </td>
-            <td>
-                @if (item.LabTest.ReportingDate == null)
-                {
-                    @Html.Raw("-")
-                }
-                else
-                {
-                    @item.LabTest.ReportingDate.Value.ToString("dd/MMM/yy")
+                <td style="background-color: @style ">
+                    @if (item.LabTest.Interpretation == 97)
+                    {
+                        @Html.Raw("NO RESULT")
+                    }
+                    else if (item.LabTest.Interpretation == 1)
+                    {
+                        @Html.Raw("POSITIVE")
+                    }
+                    else if (item.LabTest.Interpretation == 2)
+                    {
+                        @Html.Raw("NEGATIVE")
+                    }
+                    else
+                    {
+                        @Html.Raw("-")
+                    }
+                </td>
+                <td>
+                    @if (item.LabTest.ReportingDate == null)
+                    {
+                        @Html.Raw("-")
+                    }
+                    else
+                    {
+                        @item.LabTest.ReportingDate.Value.ToString("dd/MMM/yy")
+                    }
+
+                </td>
+                <td>
+                    @if (item.LabTest.ReportingTime == null)
+                    {
+                        @Html.Raw("-")
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => reporting)
+                    }
+                </td>
+
+                @{
+                    string isapproved = "-";
+                    style = "none";
+
+                    if (@item.LabTest.Approved.HasValue && @item.LabTest.Approved.Value)
+                    {
+                        isapproved = "APPROVED";
+                        style = "greenyellow";
+                    }
+                    else if (item.LabTest.Interpretation != 97)
+                    {
+                        isapproved = "PENDING";
+                    }
+
                 }
 
-            </td>
-            <td>
-                @if (item.LabTest.ReportingTime == null)
-                {
-                    @Html.Raw("-")
-                }
-                else
-                {
-                    @Html.DisplayFor(modelItem => reporting)
-                }
-            </td>
+                <td style="background-color: @style">
+                    @isapproved
+                </td>
+                <td>
+                    @if (item.LabTest.Approved == null || !item.LabTest.Approved.Value)
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.LabTest.Id">Edit</a> @Html.Raw("|")
 
-            <td>
-                @if (item.LabTest.Interpretation != 97)
-                {
-                    @Html.Raw("PENDING")
-                }
-                else if (item.LabTest.Approved.HasValue && item.LabTest.Approved.Value)
-                {
-                    @Html.Raw("APPROVED")
-                }
-                else
-                {
-                    @Html.Raw("-");
-                }
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.LabTest.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.LabTest.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.LabTest.Id">Delete</a>
-            </td>
-        </tr>
+                    }
+
+                    <a asp-action="Details" asp-route-id="@item.LabTest.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.LabTest.Id">Delete</a>
+                </td>
+            </tr>
         }
     </tbody>
 </table>
+
+<div id="show-biodata" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Biodata</h4>
+            </div>
+            <div class="modal-body" id="show-biodata-modal-body">
+                
+
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                @*<button type="button" class="btn btn-primary">Save changes</button>*@
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+@section Scripts {
+
+    <script type="text/javascript">
+
+        var biodata_link = null;
+        $(document).ready(function () {
+
+            $(".biodatalink").click(function () {
+                biodata_link = $(this);
+            });
+
+            $('#show-biodata').on('show.bs.modal', function () {
+
+                var id = biodata_link.data("id")
+                //do ajax
+                debugger;
+
+                 $.ajax({
+                        url: '@Url.Action("GetBiodata", "LabTests")',
+                        dataType: 'json',
+                        async: false,
+                        type: 'POST',
+                         data: { _id: id },
+                        success: function (data) {
+                            if (data.IsSuccessful) {
+
+                                var subj = JSON.parse(data.JSONData);
+
+                                debugger;
+
+                                var divModalBody = $("#show-biodata-modal-body");
+                                divModalBody.empty();
+
+                                var input = `   <dl class="dl-horizontal">
+                                                <dt>
+                                                   Fullname
+                                                </dt>
+                                                <dd>
+                                                     `+ subj.Fullname +`
+                                                </dd>
+                                                <dt>
+                                                    Gardian
+                                                </dt>
+                                                <dd>
+                                                    `+ subj.LegalGardianName +`
+                                                </dd>
+                                                <dt>
+                                                    DOB
+                                                </dt>
+                                                <dd>
+                                                    `+ subj._dob +`
+                                                </dd>
+                                                <dt>
+                                                    Gender
+                                                </dt>
+                                                <dd>
+                                                    `+ subj._genderName +`
+                                                </dd>
+                                                <dt>
+                                                    EPID-NO
+                                                </dt>
+                                                <dd>
+                                                    `+ subj.EpidNo +`
+                                                </dd>
+                                                <dt>
+                                                    Local Phone
+                                                </dt>
+                                                <dd>
+                                                    `+ subj.LocalPhone +`
+                                                </dd>
+                                                <dt>
+                                                    Intl. Phone
+                                                </dt>
+                                                <dd>
+                                                    `+ subj.HomePhone +`
+                                                </dd>
+                                                <dt>
+                                                    Address
+                                                </dt>
+                                                <dd>
+                                                    `+ subj.ResidentialAddress +`
+                                                </dd>
+                                            </dl>`
+
+                                divModalBody.append(input);
+
+                            }
+                            else {
+                                console.log(data.Message);
+                            }
+                        },
+                        error: function (err) { console.log(JSON.stringify(err)); }
+                    });
+
+
+            });
+
+        });
+    </script>
+
+}
+  

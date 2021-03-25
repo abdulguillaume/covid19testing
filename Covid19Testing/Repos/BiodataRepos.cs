@@ -12,13 +12,13 @@ namespace Covid19Testing.Repos
 {
     public class BiodataRepos : IBiodataRepos
     {
-        GenderRepos genders = new GenderRepos();
+        //GenderRepos genders = new GenderRepos();
 
         //string admin = "admin";
 
-        public BiodataRepos()
+        public BiodataRepos(Covid19TestingContext _Context)
         {
-            Context = new Covid19TestingContext();
+            Context = _Context;// new Covid19TestingContext();
         }
 
         public Covid19TestingContext Context { get; }
@@ -104,8 +104,7 @@ namespace Covid19Testing.Repos
                 subject.LocalPhone = obj.LocalPhone;
                 subject.HomePhone = obj.HomePhone;
                 subject.ResidentialAddress = obj.ResidentialAddress;
-                //subject.UpdateBy = admin;
-                //subject.UpdateTime = DateTime.Now;
+                subject.UpdateBy = obj.UpdateBy;
 
                 Save(subject);
             }
