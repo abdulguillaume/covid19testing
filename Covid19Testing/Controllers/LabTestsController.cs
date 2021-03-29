@@ -23,9 +23,12 @@ using Syncfusion.Pdf;
 using Syncfusion.Pdf.Barcode;
 using Syncfusion.Drawing;
 using Syncfusion.DocIORenderer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Covid19Testing.Controllers
 {
+
+    [Authorize(Roles = "dataentry10")]
     public class LabTestsController : Controller
     {
         //private readonly Covid19TestingContext _context;
@@ -39,7 +42,7 @@ namespace Covid19Testing.Controllers
         //private readonly ITestIndicatorRepos indicators;
         private readonly ISpecimenRepos specimen;
 
-        const int _pageSize = 20;
+        const int _pageSize = 5;
 
         private readonly List<SelectListItem> results = new List<SelectListItem>
             {
@@ -57,6 +60,42 @@ namespace Covid19Testing.Controllers
             genders = _genders;
         }
 
+        [HttpGet]
+        [Route("Labtests/search")]
+        public IActionResult search(int page = 1, int pageSize = _pageSize)
+        {
+            var date1 = Request.Query["date1"].ToString();
+            var date2 = Request.Query["date2"].ToString();
+
+            var clear1 = Request.Query["cleardate1"].ToString();
+            var clear2 = Request.Query["cleardate2"].ToString();
+
+            if (clear1 == "on") date1 = "";
+            if (clear2 == "on") date2 = "";
+
+            ViewBag.date1 = date1;
+            ViewBag.date2 = date2;
+
+            PagedList<LabTestDetailsViewModel> model;
+
+            HttpContext.Session.SetInt32("labtests_search_page", page);
+            HttpContext.Session.SetString("labtests_search_date1", date1);
+            HttpContext.Session.SetString("labtests_search_date2", date2);
+
+            if (string.IsNullOrEmpty(date1) && !string.IsNullOrEmpty(date2))
+                model = new PagedList<LabTestDetailsViewModel>(tests.GetAllByBeforeDate(DateTime.Parse(date2)).AsQueryable(), page, pageSize);
+            else if (string.IsNullOrEmpty(date2) && !string.IsNullOrEmpty(date1))
+                model = new PagedList<LabTestDetailsViewModel>(tests.GetAllByAfterDate(DateTime.Parse(date1)).AsQueryable(), page, pageSize);
+            else if (!string.IsNullOrEmpty(date2) && !string.IsNullOrEmpty(date1))
+                model = new PagedList<LabTestDetailsViewModel>(tests.GetAllByDateRange(DateTime.Parse(date1), DateTime.Parse(date2)).AsQueryable(), page, pageSize);
+            else
+                model = new PagedList<LabTestDetailsViewModel>(tests.GetAll().AsQueryable(), page, pageSize); //ok
+
+            //ViewBag.keyword = keyword;
+            return View("Index", model);
+            //return null;
+        }
+
         // GET: LabTests
         public async Task<IActionResult> Index()
         {
@@ -65,9 +104,19 @@ namespace Covid19Testing.Controllers
             //return View(await covid19TestingContext.ToListAsync());
             HttpContext.Session.SetString("biodata_details_token", "");
 
-            PagedList<LabTestDetailsViewModel> model = new PagedList<LabTestDetailsViewModel>(tests.GetAll().AsQueryable(), 1, _pageSize);
+            int _page = 1;
+            try
+            {
+                _page = HttpContext.Session.GetInt32("labtests_search_page").Value;
+            }
+            catch { }
 
-            return View(model);
+            string date1 = HttpContext.Session.GetString("labtests_search_date1");
+            string date2 = HttpContext.Session.GetString("labtests_search_date2");
+
+            //PagedList<LabTestDetailsViewModel> model = new PagedList<LabTestDetailsViewModel>(tests.GetAll().AsQueryable(), _page, _pageSize);
+            return RedirectToAction(nameof(search), new { page = _page, date1 = date1, date2=date2 });
+            //return View(model);
         }
 
         // GET: LabTests/Details/5
@@ -112,21 +161,36 @@ namespace Covid19Testing.Controllers
             return View(LabTest);
         }
 
-        [HttpGet]
+        [HttpPost]
+        [Authorize(Roles = "dataapprover")]
         public async Task<IActionResult> ApproveResult(int Id)
         {
-            var LabTest = tests.GetById(Id);
-
-            if (LabTest == null)
+            ActionResponse response = new ActionResponse { };
+            
+            try
             {
-                return NotFound();
+                var LabTest = tests.GetById(Id);
+
+                if (LabTest == null)
+                {
+                    return NotFound();
+                }
+
+                LabTest.LabTest.Approved = true;
+
+                tests.Update(LabTest);
+
+                response.IsSuccessful = true;
+                response.Message = "n/a";
+
+                response.JSONData = JsonConvert.SerializeObject("Ok");
             }
-
-            LabTest.LabTest.Approved = true;
-
-            tests.Update(LabTest);
-
-            return RedirectToAction(nameof(Index));
+            catch (Exception ex)
+            {
+                response.IsSuccessful = false;
+                response.Message = "n/a";
+            }
+            return Json(response, new JsonSerializerSettings());
         }
 
         [HttpGet]
@@ -345,9 +409,11 @@ namespace Covid19Testing.Controllers
             //return RedirectToAction(nameof(Index));
         }
 
-            // GET: LabTests/Create
-            public IActionResult Create(int? id)
+        // GET: LabTests/Create
+        [Authorize(Roles = "dataentry10")]
+        public IActionResult Create(int? id)
         {
+          
             if (id == null)
             {
                 return NotFound();
@@ -357,7 +423,6 @@ namespace Covid19Testing.Controllers
 
             if(string.IsNullOrEmpty(token))
                 return RedirectToAction(nameof(Index), "Biodata");
-
 
             TblBiodata _Biodata = biodata.GetById(id);
 
@@ -381,6 +446,13 @@ namespace Covid19Testing.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(LabTestDetailsViewModel _labTest)//[Bind("Id,Biodata,Method,Interpretation,TestingDate,TestingTime,ReportingDate,ReportingTime,InsertTime,InsertBy,UpdateTime,UpdateBy")] TblLabTests tblLabTests)
         {
+
+            //var errors = ModelState.Values;
+            //foreach (var e in errors)
+            //{
+            //    ;
+            //}
+
             if (ModelState.IsValid)
             {
                 _labTest.LabTest.TblLabTestsIndicatorsValues = _labTest.Indicators;
@@ -402,6 +474,7 @@ namespace Covid19Testing.Controllers
             ViewData["Method"] = new SelectList(_context.TlkpTestMethods, "Id", "InsertBy", tblLabTests.Method);*/
             TblBiodata _Biodata = biodata.GetById(_labTest.BioData.Id);
             _labTest.BioData = _Biodata;
+            //_labTest.Indicators = 
             return View(_labTest);
         }
 
@@ -494,6 +567,9 @@ namespace Covid19Testing.Controllers
 
             ViewData["Results"] = results;
             ViewData["Method"] = new SelectList(methods.GetAll(), "Id", "Methodname");
+
+            TblBiodata _Biodata = biodata.GetById(test.BioData.Id);
+            test.BioData = _Biodata;
 
             return View(test);
         }

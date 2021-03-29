@@ -334,6 +334,16 @@ namespace Covid19Testing.Models
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
+                entity.Property(e => e.UpdateBy)
+                    .IsRequired()
+                    .HasColumnName("update_by")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.UpdateTime)
+                    .HasColumnName("update_time")
+                    .HasColumnType("datetime");
+
                 entity.Property(e => e.Userrole).HasColumnName("userrole");
 
                 entity.HasOne(d => d.UserroleNavigation)

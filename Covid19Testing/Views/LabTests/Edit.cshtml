@@ -77,13 +77,13 @@
 
             <input asp-for="@Model.BioData.Id" class="form-control" type="hidden" />
             <input asp-for="@Model.BioData.Fullname" class="form-control" type="hidden" />
+            <input asp-for="@Model.BioData.LegalGardianName" class="form-control" type="hidden" />
             <input asp-for="@Model.BioData.Dateofbirth" class="form-control" type="hidden" />
             <input asp-for="@Model.BioData.Gender" class="form-control" type="hidden" />
             <input asp-for="@Model.BioData.EpidNo" class="form-control" type="hidden" />
             <input asp-for="@Model.BioData.LocalPhone" class="form-control" type="hidden" />
+            <input asp-for="@Model.BioData.HomePhone" class="form-control" type="hidden" />
             <input asp-for="@Model.BioData.ResidentialAddress" class="form-control" type="hidden" />
-
-            <input asp-for="@Model.BioData.Id" class="form-control" type="hidden" />
 
             <input asp-for="@Model.LabTest.Biodata" class="form-control" type="hidden" />
 
@@ -105,10 +105,10 @@
                 {
                     <div class="form-group">
                         @*@Html.HiddenFor(m => m.Indicators[i].Method)
-                    @Html.HiddenFor(m => m.Indicators[i].Indicator)
+                            @Html.HiddenFor(m => m.Indicators[i].Indicator)
 
-                    @Html.DisplayFor(m => m.Indicators[i].IndicatorName, new { @class = "form-control" })
-                    @Html.EditorFor(m => m.Indicators[i].IndicatorValue, new { @class = "form-control" })*@
+                            @Html.DisplayFor(m => m.Indicators[i].IndicatorName, new { @class = "form-control" })
+                            @Html.EditorFor(m => m.Indicators[i].IndicatorValue, new { @class = "form-control" })*@
                         <input asp-for="@Model.Indicators[@i].Id" value="@Model.Indicators[@i].Id" type="hidden" />
                         <input asp-for="@Model.Indicators[@i].IndicatorName" value="@Model.Indicators[@i].IndicatorName" type="hidden" />
                         <input asp-for="@Model.Indicators[@i].Labtest" value="@Model.Indicators[@i].Labtest" type="hidden" />
@@ -138,19 +138,19 @@
 
                 <label asp-for="@Model.LabTest.Interpretation" class="control-label"></label>
 
-                @if (Model.LabTest.Interpretation != 97)
-                {
-                    <input asp-for="@Model.LabTest.Interpretation" class="form-control" type="hidden" />
-                    <select asp-for="@Model.LabTest.Interpretation" class="form-control" asp-items="ViewBag.Results" disabled>
-                        <option value="97">NO RESULT</option>
-                    </select>
-                }
-                else
-                {
-                    <select asp-for="@Model.LabTest.Interpretation" class="form-control" asp-items="ViewBag.Results">
-                        <option value="97">NO RESULT</option>
-                    </select>
-                }
+                @*@if (Model.LabTest.Interpretation != 97)
+                    {
+                        <input asp-for="@Model.LabTest.Interpretation" class="form-control" type="hidden" />
+                        <select asp-for="@Model.LabTest.Interpretation" class="form-control" asp-items="ViewBag.Results" disabled>
+                            <option value="97">NO RESULT</option>
+                        </select>
+                    }
+                    else
+                    {*@
+                <select asp-for="@Model.LabTest.Interpretation" class="form-control" asp-items="ViewBag.Results">
+                    <option value="97">NO RESULT</option>
+                </select>
+                @*}*@
 
 
             </div>
@@ -159,69 +159,91 @@
 
                 @if (Model.LabTest.Interpretation != 97)
                 {
-                    <label asp-for="@Model.LabTest.ReportingDate" class="control-label"></label>
-                    <input asp-for="@Model.LabTest.ReportingDate" class="form-control" type="date" />
-                    <label asp-for="@Model.LabTest.ReportingTime" class="control-label"></label>
-                    <input asp-for="@Model.LabTest.ReportingTime" class="form-control" type="time" />
-
+                    <div>
+                        <label asp-for="@Model.LabTest.ReportingDate" class="control-label"></label>
+                        <input asp-for="@Model.LabTest.ReportingDate" class="form-control" type="date" />
+                        <span asp-validation-for="@Model.LabTest.ReportingDate" class="text-danger"></span>
+                    </div>
+                    <div>
+                        <label asp-for="@Model.LabTest.ReportingTime" class="control-label"></label>
+                        <input asp-for="@Model.LabTest.ReportingTime" class="form-control" type="time" />
+                        <span asp-validation-for="@Model.LabTest.ReportingTime" class="text-danger"></span>
+                    </div>
                 }
 
             </div>
 
             <hr />
-            <h4 align="center">OFFICIAL USE ONLY</h4>
 
-            <div class="form-group">
-                <table>
-                    @for (int i = 0; i < Model.Specimen.Count; i++)
-                    {
+            @{
 
-                        <tr>
-                            <td>
-                                <input asp-for="@Model.Specimen[i].Id" value="@Model.Specimen[@i].Id" type="hidden" />
-                                <input asp-for="@Model.Specimen[i].Labtest" value="@Model.Specimen[@i].Labtest" type="hidden" />
-                                <input asp-for="@Model.Specimen[i].Specimen" value="@Model.Specimen[@i].Specimen" type="hidden" />
-                                <input asp-for="@Model.Specimen[i].SpecimenName" value="@Model.Specimen[@i].SpecimenName" type="hidden" />
+                string style = "display: none";
 
-                                @*<label class="control-label">@Model.Specimen[i].SpecimenName</label>*@
-                                @Model.Specimen[i].SpecimenName
-                            </td>
-                            <td>
-                                <input asp-for="@Model.Specimen[i].Checked" type="checkbox" class="specimen_checkbox" data-other="@Model.Specimen[i].Specimen" data-position="@i" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                @if (Model.Specimen[i].Specimen == 99)
-                                {
-                                    <div id="specimen_other">
+                if (User.IsInRole("dataapprover"))
+                {
+                    style = "";
+                }
 
-                                        @if (Model.Specimen[i].Checked)
-                                        {
-                                            <label class="control-label">Specify</label>
-                                            <input asp-for="@Model.Specimen[i].SpecimenOther" type="text" class="form-control" />
-                                            <span asp-validation-for="@Model.Specimen[i].SpecimenOther" class="text-danger"></span>
-                                        }
-
-                                    </div>
-
-                                }
-                            </td>
-                        </tr>
+            }
 
 
 
+            <div style="@style">
 
-                        @*@Html.HiddenFor(m => m.Specimen[i].Specimen)
-                    @Html.HiddenFor(m => m.Specimen[i].SpecimenName)
-                    @Html.DisplayFor(m => m.Specimen[i].SpecimenName)
-                    @Html.CheckBoxFor(m => m.Specimen[i].Checked)*@
-                        @*<input asp-for="InsertTime" class="form-control" />
-                    <span asp-validation-for="InsertTime" class="text-danger"></span>*@
+                <h4 align="center">OFFICIAL USE ONLY</h4>
+
+                <div class="form-group">
+                    <table>
+                        @for (int i = 0; i < Model.Specimen.Count; i++)
+                        {
+
+                            <tr>
+                                <td>
+                                    <input asp-for="@Model.Specimen[i].Id" value="@Model.Specimen[@i].Id" type="hidden" />
+                                    <input asp-for="@Model.Specimen[i].Labtest" value="@Model.Specimen[@i].Labtest" type="hidden" />
+                                    <input asp-for="@Model.Specimen[i].Specimen" value="@Model.Specimen[@i].Specimen" type="hidden" />
+                                    <input asp-for="@Model.Specimen[i].SpecimenName" value="@Model.Specimen[@i].SpecimenName" type="hidden" />
+
+                                    @*<label class="control-label">@Model.Specimen[i].SpecimenName</label>*@
+                                    @Model.Specimen[i].SpecimenName
+                                </td>
+                                <td>
+                                    <input asp-for="@Model.Specimen[i].Checked" type="checkbox" class="specimen_checkbox" data-other="@Model.Specimen[i].Specimen" data-position="@i" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    @if (Model.Specimen[i].Specimen == 99)
+                                    {
+                                        <div id="specimen_other">
+
+                                            @if (Model.Specimen[i].Checked)
+                                            {
+                                                <label class="control-label">Specify</label>
+                                                <input asp-for="@Model.Specimen[i].SpecimenOther" type="text" class="form-control" />
+                                                <span asp-validation-for="@Model.Specimen[i].SpecimenOther" class="text-danger"></span>
+                                            }
+
+                                        </div>
+
+                                    }
+                                </td>
+                            </tr>
 
 
-                    }
-                </table>
+
+
+                            @*@Html.HiddenFor(m => m.Specimen[i].Specimen)
+                                @Html.HiddenFor(m => m.Specimen[i].SpecimenName)
+                                @Html.DisplayFor(m => m.Specimen[i].SpecimenName)
+                                @Html.CheckBoxFor(m => m.Specimen[i].Checked)*@
+                            @*<input asp-for="InsertTime" class="form-control" />
+                                <span asp-validation-for="InsertTime" class="text-danger"></span>*@
+
+
+                        }
+                    </table>
+                </div>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />
@@ -250,8 +272,8 @@
                         divSpecimen.empty();
 
                         var input = `<label class="control-label" >Specify</label>
-                                            <input name="Specimen[`+ position + `].SpecimenOther" id="Specimen_` + position +`__SpecimenOther" class="form-control" type="text"/>
-                                            <span class="text-danger field-validation-valid" data-valmsg-for="Specimen[`+ position + `].SpecimenOther" data-valmsg-replace="true"></span>`;
+                                                <input name="Specimen[`+ position + `].SpecimenOther" id="Specimen_` + position + `__SpecimenOther" class="form-control" type="text"/>
+                                                <span class="text-danger field-validation-valid" data-valmsg-for="Specimen[`+ position + `].SpecimenOther" data-valmsg-replace="true"></span>`;
 
                         divSpecimen.append(input);
 
@@ -266,18 +288,20 @@
             $('#LabTest_Interpretation').change(function () {
                 var m = $(this).val();
 
-                if (m)
-                {
+                if (m) {
                     //do ajax
                     var divReport = $("#LabTestReportDateTime");
                     divReport.empty();
                     if (m == 97) return;
-                    var input = `<div class="form-group">
-                                            <label class="control-label" >ReportingDate</label>
-                                            <input name="LabTest.ReportingDate" id="LabTest_ReportingDate" class="form-control" type="date"/>
-                                            <label class="control-label" >ReportingTime</label>
-                                            <input name="LabTest.ReportingTime" id="LabTest_ReportingTime" class="form-control" type="time"/>
-                                            </div>`;
+                    var input = `<div class="form-group>
+                                        <label class="control-label" >ReportingDate</label>
+                                        <input name="LabTest.ReportingDate" id="LabTest_ReportingDate" class="form-control" type="date"/>
+                                        <span asp-validation-for="LabTest.ReportingDate" class="text-danger"></span>
+                                        </div><div class="form-group>
+                                        <label class="control-label" >ReportingTime</label>
+                                        <input name="LabTest.ReportingTime" id="LabTest_ReportingTime" class="form-control" type="time"/>
+                                        <span asp-validation-for="LabTest.ReportingTime" class="text-danger"></span>
+                                    </div>`;
 
                     divReport.append(input);
 

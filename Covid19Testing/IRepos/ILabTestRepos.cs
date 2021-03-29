@@ -8,6 +8,11 @@ namespace Covid19Testing.IRepos
 {
     public interface ILabTestRepos: IRepository<LabTestDetailsViewModel>
     {
+        //IEnumerable<LabTestDetailsViewModel> GetAllByDateRange(DateTime date1, DateTime date2);
+        IEnumerable<LabTestDetailsViewModel> GetAllByDateRange(DateTime date1, DateTime date2);
 
+        IEnumerable<LabTestDetailsViewModel> GetAllByBeforeDate(DateTime dt);
+
+        IEnumerable<LabTestDetailsViewModel> GetAllByAfterDate(DateTime dt);
     }
 }

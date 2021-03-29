@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Covid19Testing.Utils;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -25,8 +26,10 @@ namespace Covid19Testing.Models
         [DisplayName("Test time")]
         public TimeSpan? TestingTime { get; set; }
         [DisplayName("Report date")]
+        [RequiredIfTrue(nameof(_Interpretation), ErrorMessage = "*")]
         public DateTime? ReportingDate { get; set; }
         [DisplayName("Report time")]
+        [RequiredIfTrue(nameof(_Interpretation), ErrorMessage = "*")]
         public TimeSpan? ReportingTime { get; set; }
         [DisplayName("Inserted on")]
         public DateTime? InsertTime { get; set; }

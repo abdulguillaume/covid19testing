@@ -22,8 +22,10 @@ namespace Covid19Testing.Utils
         public Task<ClaimsPrincipal> TransformAsync(ClaimsPrincipal principal)
         {
             //throw new NotImplementedException();
-            var identity = (ClaimsIdentity)principal.Identity;
+            var clone = principal.Clone();
+            var identity = (ClaimsIdentity)clone.Identity;
             var userName = identity.Name;
+            
             var user = Context.TblUsers
                 .FirstOrDefault(u => u.Username == userName);
             var role = user==null?0:user.Userrole;
@@ -34,12 +36,12 @@ namespace Covid19Testing.Utils
             {
                 if (role >= r.Id)
                 {
-                    var claim = new Claim(ClaimTypes.Role, r.Rolename);
+                    var claim = new Claim(identity.RoleClaimType, r.Rolename);
                     identity.AddClaim(claim);
                 }
                 
             }
-            return Task.FromResult(principal);
+             return Task.FromResult(clone);
         }
     }
 }

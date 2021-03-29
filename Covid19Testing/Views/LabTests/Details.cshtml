@@ -4,6 +4,8 @@
     ViewData["Title"] = "Details";
 }
 
+@using Covid19Testing.Utils
+
 <h2>COVID-19 TESTING FORM</h2>
 
 <div align="right">
@@ -19,17 +21,16 @@
     }
     else if (ViewBag.Ready && !Model.LabTest.Approved)
     {
-        <form asp-action="ApproveResult" method="get">
-            <input type="hidden" name="Id" value="@Model.LabTest.Id" />
-            <input type="submit" value="Approve Result" class="btn btn-default" />
-        </form>
+        @*<form asp-action="ApproveResult" method="get">
+            <input type="hidden" name="Id" value="@Model.LabTest.Id" />*@
+            <input type="submit" value="Approve Result" onclick="approveResult(@Model.LabTest.Id)" class="btn btn-default" />
+        @*</form>*@
     }
-
 
 
 </div>
 
-<div>
+<div  >
     <h4>Biodata</h4>
     <hr />
     <dl class="dl-horizontal">
@@ -110,19 +111,18 @@
 </div>
 
 @{ 
-    DateTime dt = DateTime.Today;
-    string testing = (dt + @Model.LabTest.TestingTime.Value).ToString("hh:mm tt");
-    string reporting = "";
-    if (@Model.LabTest.ReportingDate != null)
+
+    string style = "";
+
+    if (Model.LabTest.Approved!=null && Model.LabTest.Approved.Value)
     {
-        reporting = (dt + @Model.LabTest.ReportingTime.Value).ToString("hh:mm tt");
+        style = "background: url('/Content/approved4.png') no-repeat right;background-size: contain;";
     }
 }
 
-
 <h4>Test</h4>
 <hr />
-<div class="row">
+<div class="row" style="@style">
     <div class="col-md-4">
 
         <dl class="dl-horizontal">
@@ -147,14 +147,14 @@
                 @Html.DisplayNameFor(model => model.LabTest.TestingDate)
             </dt>
             <dd>
-                @Model.LabTest.TestingDate.Value.ToString("dd/MMM/yy")
+                @Utils.toShortdate(@Model.LabTest.TestingDate)
             </dd>
 
             <dt>
                 @Html.DisplayNameFor(model => model.LabTest.TestingTime)
             </dt>
             <dd>
-                @Html.DisplayFor(model => testing)
+                @Utils.time12Hr(@Model.LabTest.TestingTime)
             </dd>
 
             <dt>
@@ -183,28 +183,14 @@
                 @Html.DisplayNameFor(model => model.LabTest.ReportingDate)
             </dt>
             <dd>
-               @if (Model.LabTest.ReportingDate != null)
-               {
-                   @Model.LabTest.ReportingDate.Value.ToString("dd/MMM/yy")
-               }
-               else {
-                   @Html.Raw("-");
-               }
-                
+                @Utils.toShortdate(@Model.LabTest.ReportingDate)
             </dd>
 
             <dt>
                 @Html.DisplayNameFor(model => model.LabTest.ReportingTime)
             </dt>
             <dd>
-                @if (Model.LabTest.ReportingDate != null)
-                {
-                    @Html.DisplayFor(model =>reporting)
-                }
-                else
-                {
-                    @Html.Raw("-");
-                }
+                @Utils.time12Hr(@Model.LabTest.ReportingTime)
 
             </dd>
 
@@ -236,15 +222,50 @@
                 </tr>
 
 
-                
+
 
             }
         </table>
-        
 
 
+
+    </div>
 </div>
-</div>
+
+<partial name="~/ModalPartialViews/_Confirm.cshtml" />
+<partial name="~/ModalPartialViews/_Alert.cshtml" />
+
+<script>
+    function approveResult(testid) {
+
+        confirm_modal("Confirm Covid19 test result", function () {
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("ApproveResult", "LabTests")',
+                data: { Id: testid },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.IsSuccessful) {
+
+                        alert_modal("Covid19 Test Result Approved.", function () {
+                            location.reload();
+                        })
+                        
+                    } else {
+                        console.log(data.Message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert(xhr.responseText);
+                }
+            });
 
 
+
+
+        });
+    }
+
+</script>
 

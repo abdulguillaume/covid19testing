@@ -1,0 +1,91 @@
+﻿@model Covid19Testing.Models.TblUsers
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>User Details</h2>
+
+<div>
+    @*<h4>TblUsers</h4>*@
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Id)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Id)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Username)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Username)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Userrole)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.UserroleNavigation.Rolename)
+        </dd>
+
+        <dt>
+            Locked
+            @*@Html.DisplayNameFor(model => model.locked)*@
+        </dt>
+        <dd>
+            @Html.CheckBoxFor(model => model.locked, new { @disabled="disabled"})
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LockTime)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LockTime)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.LockedBy)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LockedBy)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LastunlockTime)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LastunlockTime)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.LastunlockedBy)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LastunlockedBy)
+        </dd>
+
+
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UpdateTime)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.UpdateTime)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.UpdateBy)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.UpdateBy)
+        </dd>
+
+
+    </dl>
+</div>
+<div>
+    @*<a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |*@
+    @if (User.Identity.Name != Model.Username)
+    {
+        <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> @Html.Raw("|")
+    }
+    <a asp-action="Index">Back to user List</a>
+</div>

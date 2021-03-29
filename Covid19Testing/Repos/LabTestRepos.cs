@@ -52,7 +52,70 @@ namespace Covid19Testing.Repos
         {
             //throw new NotImplementedException();
             List<TblLabTests> _labTests = Context.TblLabTests
+                .OrderByDescending(t => t.TestingDate)
                 .Include(t=>t.BiodataNavigation)
+                .ToList();
+
+            if (_labTests == null) return null;
+
+            List<LabTestDetailsViewModel> _labTestsVM = new List<LabTestDetailsViewModel>();
+
+            foreach (var t in _labTests)
+            {
+                _labTestsVM.Add(new LabTestDetailsViewModel(t));
+            }
+
+            return _labTestsVM.AsEnumerable();
+
+
+        }
+
+        public IEnumerable<LabTestDetailsViewModel> GetAllByAfterDate(DateTime dt)
+        {
+            //throw new NotImplementedException();
+            List<TblLabTests> _labTests = Context.TblLabTests
+                .Where(t => t.TestingDate.Value.Date >= dt.Date )
+                .Include(t => t.BiodataNavigation)
+                .ToList();
+
+            if (_labTests == null) return null;
+
+            List<LabTestDetailsViewModel> _labTestsVM = new List<LabTestDetailsViewModel>();
+
+            foreach (var t in _labTests)
+            {
+                _labTestsVM.Add(new LabTestDetailsViewModel(t));
+            }
+
+            return _labTestsVM.AsEnumerable();
+        }
+
+        public IEnumerable<LabTestDetailsViewModel> GetAllByBeforeDate(DateTime dt)
+        {
+            //throw new NotImplementedException();
+            List<TblLabTests> _labTests = Context.TblLabTests
+                .Where(t => t.TestingDate.Value.Date <= dt.Date)
+                .Include(t => t.BiodataNavigation)
+                .ToList();
+
+            if (_labTests == null) return null;
+
+            List<LabTestDetailsViewModel> _labTestsVM = new List<LabTestDetailsViewModel>();
+
+            foreach (var t in _labTests)
+            {
+                _labTestsVM.Add(new LabTestDetailsViewModel(t));
+            }
+
+            return _labTestsVM.AsEnumerable();
+        }
+
+        public IEnumerable<LabTestDetailsViewModel> GetAllByDateRange(DateTime date1, DateTime date2)
+        {
+            //throw new NotImplementedException();
+            List<TblLabTests> _labTests = Context.TblLabTests
+                .Where(t => t.TestingDate.Value.Date >= date1.Date && t.TestingDate.Value.Date <= date2.Date)
+                .Include(t => t.BiodataNavigation)
                 .ToList();
 
             if (_labTests == null) return null;

@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Covid19Testing.Controllers
 {
+    //[Authorize(Roles = "dataentry5")]
     public class BiodataController : Controller
     {
         //private readonly Covid19TestingContext _context;
@@ -21,7 +22,7 @@ namespace Covid19Testing.Controllers
 
         readonly IGenderRepos genders;//= new GenderRepos();
 
-        const int _pageSize = 20;
+        const int _pageSize = 3;
 
         public BiodataController(IGenderRepos _genders,IBiodataRepos _biodata)//Covid19TestingContext context)
         {
@@ -31,11 +32,14 @@ namespace Covid19Testing.Controllers
         }
 
         [HttpGet]
-        [Route("search")]
+        [Route("Biodata/search")]
         public IActionResult search(int page = 1, int pageSize = _pageSize)
         {
             HttpContext.Session.SetString("biodata_details_token", "");
             var keyword = Request.Query["keyword"].ToString();
+            HttpContext.Session.SetString("biodata_search_keyword", keyword);
+
+            HttpContext.Session.SetInt32("biodata_search_page",  page);
             PagedList<TblBiodata> model = new PagedList<TblBiodata>(biodata.GetAllByName(keyword).AsQueryable(), page, pageSize);
             ViewBag.keyword = keyword;
             return View("Index", model);
@@ -47,8 +51,22 @@ namespace Covid19Testing.Controllers
             //var covid19TestingContext = _context.TblBiodata.Include(t => t.GenderNavigation);
             HttpContext.Session.SetString("biodata_details_token", "");
 
+            string _keyword = HttpContext.Session.GetString("biodata_search_keyword");
+
+            int _page = 1;
+            try
+            {
+                _page = HttpContext.Session.GetInt32("biodata_search_page").Value;
+            }
+            catch { }
+
+            if (!string.IsNullOrEmpty(_keyword)) {
+                
+                //return search(_page, _pageSize);
+                return RedirectToAction(nameof(search), new { page = _page, keyword = _keyword });
+            }
             //return View(await covid19TestingContext.ToListAsync());
-            PagedList<TblBiodata> model = new PagedList<TblBiodata>(biodata.GetAll().AsQueryable(), 1, _pageSize);
+            PagedList<TblBiodata> model = new PagedList<TblBiodata>(biodata.GetAll().AsQueryable(), _page, _pageSize);
             return View(model);
         }
 

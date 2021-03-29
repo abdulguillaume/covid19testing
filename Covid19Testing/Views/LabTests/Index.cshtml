@@ -3,16 +3,49 @@
 @model PagedList.Core.IPagedList<Covid19Testing.ViewModels.LabTestDetailsViewModel>
 @addTagHelper *, PagedList.Core.Mvc
 
+@using Covid19Testing.Utils
+
 @{
     ViewData["Title"] = "Index";
-    DateTime dt = DateTime.Now;
 }
+
 
 <h2>COVID-19 TESTING RESULTs</h2>
 
 @*<p align="right">
         <a asp-action="Index" asp-controller="Biodata">Biodata Search Page</a>
     </p>*@
+
+<hr />
+
+<p align="right">
+    <a asp-action="xx">Export to Excel (NOK)</a>
+</p>
+
+<form method="get" asp-controller="LabTests" asp-action="search">
+    <div class="input-group">
+
+        @*<table style="border-collapse:separate;border-spacing:0 5px;">
+            <tr><td>From:</td><td><input name="date1" value="@ViewBag.date1" placeholder="From date" type="date" /><br /></td><td><input type="checkbox" name="cleardate1" /> reset</td></tr>
+            <tr><td>To:</td><td><input name="date2" value="@ViewBag.date2" placeholder="To date" type="date" /><br /></td><td><input type="checkbox" name="cleardate2" /> reset</td></tr>
+            <tr><td></td><td colspan="2"><button type="submit">Search</button></td></tr>
+        </table>*@
+        <table>
+            <tr>
+                <td>From: </td><td><input name="date1" value="@ViewBag.date1" placeholder="From date" type="date" /></td>
+                <td>To: </td><td><input name="date2" value="@ViewBag.date2" placeholder="To date" type="date" /></td>
+                <td><button type="submit">Search</button></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="checkbox" name="cleardate1" /> reset</td>
+                <td></td>
+                <td><input type="checkbox" name="cleardate2" /> reset</td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+</form>
 
 <table class="table">
     <thead>
@@ -44,105 +77,106 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @if (Model.Count() == 0)
         {
-            string testing = (dt + @item.LabTest.TestingTime.Value).ToString("hh:mm tt");
-            string reporting = "";
-            if (@item.LabTest.ReportingDate != null)
-            {
-                reporting = (dt + @item.LabTest.ReportingTime.Value).ToString("hh:mm tt");
-            }
-
             <tr>
-                <td>
-
-                    <a  data-toggle="modal" data-target="#show-biodata" class="biodatalink" data-id="@item.BioData.Id">
-                        @Html.DisplayFor(modelItem => item.BioData.EpidNo)
-                    </a>
-
-
-                </td>
-                <td>
-                    @item.LabTest.TestingDate.Value.ToString("dd/MMM/yy")
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => testing)
-                </td>
-                @{
-                    //"lightskyblue"
-                    string @style = (item.LabTest.Interpretation == 1) ? "red" : (item.LabTest.Interpretation == 2) ? "greenyellow" : "lightgray";
-                }
-                <td style="background-color: @style ">
-                    @if (item.LabTest.Interpretation == 97)
-                    {
-                        @Html.Raw("NO RESULT")
-                    }
-                    else if (item.LabTest.Interpretation == 1)
-                    {
-                        @Html.Raw("POSITIVE")
-                    }
-                    else if (item.LabTest.Interpretation == 2)
-                    {
-                        @Html.Raw("NEGATIVE")
-                    }
-                    else
-                    {
-                        @Html.Raw("-")
-                    }
-                </td>
-                <td>
-                    @if (item.LabTest.ReportingDate == null)
-                    {
-                        @Html.Raw("-")
-                    }
-                    else
-                    {
-                        @item.LabTest.ReportingDate.Value.ToString("dd/MMM/yy")
-                    }
-
-                </td>
-                <td>
-                    @if (item.LabTest.ReportingTime == null)
-                    {
-                        @Html.Raw("-")
-                    }
-                    else
-                    {
-                        @Html.DisplayFor(modelItem => reporting)
-                    }
-                </td>
-
-                @{
-                    string isapproved = "-";
-                    style = "none";
-
-                    if (@item.LabTest.Approved.HasValue && @item.LabTest.Approved.Value)
-                    {
-                        isapproved = "APPROVED";
-                        style = "greenyellow";
-                    }
-                    else if (item.LabTest.Interpretation != 97)
-                    {
-                        isapproved = "PENDING";
-                    }
-
-                }
-
-                <td style="background-color: @style">
-                    @isapproved
-                </td>
-                <td>
-                    @if (item.LabTest.Approved == null || !item.LabTest.Approved.Value)
-                    {
-                        <a asp-action="Edit" asp-route-id="@item.LabTest.Id">Edit</a> @Html.Raw("|")
-
-                    }
-
-                    <a asp-action="Details" asp-route-id="@item.LabTest.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.LabTest.Id">Delete</a>
+                <td colspan="6" style="color:red" align="center">
+                    No Covid19 test found.
                 </td>
             </tr>
         }
+        else
+        {
+            @foreach (var item in Model)
+            {
+
+                <tr>
+                    <td>
+
+                        <a data-toggle="modal" data-target="#show-biodata" class="biodatalink" data-id="@item.BioData.Id">
+                            @Html.DisplayFor(modelItem => item.BioData.EpidNo)
+                        </a>
+
+
+                    </td>
+                    <td>
+                        @Utils.toShortdate(@item.LabTest.TestingDate)
+                    </td>
+                    <td>
+                        @Utils.time12Hr(@item.LabTest.TestingTime)
+                        @*@Html.DisplayFor(modelItem => Utils.time12Hr(@item.LabTest.TestingTime))*@
+                    </td>
+                    @{
+                        //"lightskyblue"
+                        string @style = (item.LabTest.Interpretation == 1) ? "red" : (item.LabTest.Interpretation == 2) ? "greenyellow" : "lightgray";
+                    }
+                    <td style="background-color: @style ">
+                        @if (item.LabTest.Interpretation == 97)
+                        {
+                            @Html.Raw("NO RESULT")
+                        }
+                        else if (item.LabTest.Interpretation == 1)
+                        {
+                            @Html.Raw("POSITIVE")
+                        }
+                        else if (item.LabTest.Interpretation == 2)
+                        {
+                            @Html.Raw("NEGATIVE")
+                        }
+                        else
+                        {
+                            @Html.Raw("-")
+                        }
+                    </td>
+                    <td>
+
+                        @Utils.toShortdate(@item.LabTest.ReportingDate)
+
+                    </td>
+                    <td>
+                        @Utils.time12Hr(@item.LabTest.ReportingTime)
+                        @*@Html.DisplayFor(modelItem => Utils.time12Hr(@item.LabTest.ReportingTime))*@
+                    </td>
+
+                    @{
+                        string isapproved = "-";
+                        style = "none";
+
+                        if (@item.LabTest.Approved.HasValue && @item.LabTest.Approved.Value)
+                        {
+                            isapproved = "APPROVED";
+                            style = "greenyellow";
+                        }
+                        else if (item.LabTest.Interpretation != 97)
+                        {
+                            isapproved = "PENDING";
+                        }
+
+                    }
+
+                    <td style="background-color: @style">
+                        @isapproved
+                    </td>
+                    <td>
+                        @if (item.LabTest.Approved == null || !item.LabTest.Approved.Value)
+                        {
+                            <a asp-action="Edit" asp-route-id="@item.LabTest.Id">Edit</a> @Html.Raw("|")
+
+                        }
+
+                        <a asp-action="Details" asp-route-id="@item.LabTest.Id">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.LabTest.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+
+        }
+
+        <tr>
+            <td colspan="7" align="left">
+                <pager list="@Model" asp-controller="LabTests" asp-action="search" />
+            </td>
+        </tr>
     </tbody>
 </table>
 
@@ -154,7 +188,7 @@
                 <h4 class="modal-title">Biodata</h4>
             </div>
             <div class="modal-body" id="show-biodata-modal-body">
-                
+
 
 
 
@@ -268,4 +302,3 @@
     </script>
 
 }
-  

@@ -108,10 +108,12 @@
 
             <input asp-for="@Model.BioData.Id" class="form-control" type="hidden" />
             <input asp-for="@Model.BioData.Fullname" class="form-control" type="hidden" />
+            <input asp-for="@Model.BioData.LegalGardianName" class="form-control" type="hidden" />
             <input asp-for="@Model.BioData.Dateofbirth" class="form-control" type="hidden" />
             <input asp-for="@Model.BioData.Gender" class="form-control" type="hidden" />
             <input asp-for="@Model.BioData.EpidNo" class="form-control" type="hidden" />
             <input asp-for="@Model.BioData.LocalPhone" class="form-control" type="hidden" />
+            <input asp-for="@Model.BioData.HomePhone" class="form-control" type="hidden" />
             <input asp-for="@Model.BioData.ResidentialAddress" class="form-control" type="hidden" />
 
             <input asp-for="@Model.LabTest.Biodata" class="form-control" type="hidden" />
@@ -157,46 +159,66 @@
 
 
             <hr />
-            <h4 align="center">OFFICIAL USE ONLY</h4>
 
 
-            <table>
 
-                @for (int i = 0; i < Model.Specimen.Count; i++)
+            @{
+
+                string style = "display: none";
+
+                if (User.IsInRole("dataapprover"))
                 {
-                    <tr>
-                        <td>
-                            @Html.HiddenFor(m => m.Specimen[i].Specimen)
-                            @Html.HiddenFor(m => m.Specimen[i].SpecimenName)
-                            @Html.DisplayFor(m => m.Specimen[i].SpecimenName)
-                        </td>
-                        <td>
+                    style = "";
+                }
 
-                            @if (Model.Specimen[i].Specimen == 99)
-                            {
-                                @Html.CheckBoxFor(m => m.Specimen[i].Checked, new { @class = "specimen_checkbox" })
-                            }
-                            else
-                            {
-                                @Html.CheckBoxFor(m => m.Specimen[i].Checked)
-                            }
+            }
 
-                            @*<input asp-for="InsertTime" class="form-control" />
+
+            <div style="@style">
+
+                <h4 align="center">OFFICIAL USE ONLY</h4>
+
+
+                <table>
+
+                    @for (int i = 0; i < Model.Specimen.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @Html.HiddenFor(m => m.Specimen[i].Specimen)
+                                @Html.HiddenFor(m => m.Specimen[i].SpecimenName)
+                                @Html.DisplayFor(m => m.Specimen[i].SpecimenName)
+                            </td>
+                            <td>
+
+                                @if (Model.Specimen[i].Specimen == 99)
+                                {
+                                    @Html.CheckBoxFor(m => m.Specimen[i].Checked, new { @class = "specimen_checkbox" })
+                                }
+                                else
+                                {
+                                    @Html.CheckBoxFor(m => m.Specimen[i].Checked)
+                                }
+
+                                @*<input asp-for="InsertTime" class="form-control" />
                         <span asp-validation-for="InsertTime" class="text-danger"></span>*@
+                            </td>
+                        </tr>
+
+                    }
+
+                    <tr>
+                        <td colspan="2">
+                            <div id="specimen_other">
+
+                            </div>
                         </td>
                     </tr>
 
-                }
+                </table>
 
-                <tr>
-                    <td colspan="2">
-                        <div id="specimen_other">
+            </div>
 
-                        </div>
-                    </td>
-                </tr>
-
-            </table>
 
 
 

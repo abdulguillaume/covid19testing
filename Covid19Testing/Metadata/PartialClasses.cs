@@ -23,13 +23,19 @@ namespace Covid19Testing.Models
 
     //}
 
-    public partial class TblBiodata
+    public partial class TblLabTests
+    {
+        [NotMapped]
+        public bool _Interpretation { get { return Interpretation!=97; } set {; } }
+    }
+
+        public partial class TblBiodata
     {
         [NotMapped]
         public string _genderName { get; set; }
 
         [NotMapped]
-        public string _dob { get; set; }
+        public string _dob { get; set; }  //
     }
 
         public partial class TblLabTestsIndicatorsValues
@@ -42,5 +48,11 @@ namespace Covid19Testing.Models
     {
         [NotMapped]
         public string SpecimenName { get; set; }
+    }
+
+    public partial class TblUsers
+    {
+        [NotMapped]
+        public bool locked { get { return LockTime != null; } set {; } }
     }
 }

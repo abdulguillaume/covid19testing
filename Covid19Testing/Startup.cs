@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Covid19Testing.IRepos;
@@ -17,6 +18,7 @@ using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 
 namespace Covid19Testing
 {
@@ -39,6 +41,16 @@ namespace Covid19Testing
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.AddAuthentication(IISDefaults.AuthenticationScheme);
+
+            //services.AddAuthorization(options => {
+            //    options.AddPolicy("Admin", policy => policy.RequireClaim("administrator"));
+            //    options.AddPolicy("Approver", policy => policy.RequireClaim("dataapprover"));
+            //    options.AddPolicy("EntryLevel2", policy => policy.RequireClaim("dataentry10"));
+            //    options.AddPolicy("EntryLevel1", policy => policy.RequireClaim("dataentry5"));
+            //    options.AddPolicy("Viewonly", policy => policy.RequireClaim("viewonly"));
+            //});
+
             services.AddSession(options => {
                 options.IdleTimeout = TimeSpan.FromMinutes(1);
             });
@@ -54,6 +66,8 @@ namespace Covid19Testing
             //services.AddScoped<Covid19TestingContext>();
 
             //services.AddSession()
+
+            services.AddScoped<IUserRepos, UserRepos>();
 
             services.AddScoped<IGenderRepos, GenderRepos>();
             services.AddScoped<ISpecimenRepos , SpecimenRepos>();
@@ -82,8 +96,17 @@ namespace Covid19Testing
                 app.UseHsts();
             }
 
+            //app.UseStatusCodePages(); //works fine
+            //app.UseStatusCodePagesWithReExecute("/Home/Error", "?code={0}");
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, "Content")),
+                RequestPath = "/Content"
+            });
+
             app.UseCookiePolicy();
 
             app.UseSession();
