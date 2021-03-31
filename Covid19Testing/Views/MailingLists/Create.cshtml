@@ -1,0 +1,94 @@
+﻿@model Covid19Testing.Models.TblMailingLists
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Add Email</h2>
+
+<div align="right">
+    <input type="submit" value="Add New Mailing Group" onclick="addGroup()" class="btn btn-default" />
+</div>
+
+@*<h4>TblMailingLists</h4>*@
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+
+                <label class="control-label">Groups</label>
+                <select name="selected_groups" class="form-control" multiple asp-items="ViewBag.Groups">
+                </select>
+
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+<partial name="~/ModalPartialViews/_Input.cshtml" />
+<partial name="~/ModalPartialViews/_Alert.cshtml" />
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+
+        function addGroup() {
+
+            input_modal("Add New Mailing Group", "Enter Group Name", function () {
+
+                //ajax
+   
+                ///alert($inputModalVal);
+
+                $.ajax({
+                        url: '@Url.Action("CreateGroup", "MailingLists")',
+                        dataType: 'json',
+                        async: false,
+                        type: 'POST',
+                        data: { _group: $inputModalVal },
+                        success: function (data) {
+                            if (data.IsSuccessful) {
+
+                                //alert_modal("Covid19 Test Result Approved.", function () {
+                                    location.reload();
+                                //});
+
+                            }
+                            else {
+                                alert_modal(data.Message);
+                            }
+                        },
+                        error: function (err) { console.log(JSON.stringify(err)); }
+                    });
+
+
+                //end ajax
+
+
+
+            }, "^.{5,}$", "Minimum length 5!");
+
+            
+        }
+        //$(document).ready(function () {
+
+
+
+        //});
+    </script>
+}

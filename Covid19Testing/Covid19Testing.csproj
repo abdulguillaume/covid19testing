@@ -18,6 +18,9 @@
     <Content Update="ModalPartialViews\_Alert.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="ModalPartialViews\_Input.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="ModalPartialViews\_Template.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

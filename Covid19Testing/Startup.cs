@@ -67,6 +67,8 @@ namespace Covid19Testing
 
             //services.AddSession()
 
+            
+            services.AddScoped<IMailingRepos, MailingRepos>();
             services.AddScoped<IUserRepos, UserRepos>();
 
             services.AddScoped<IGenderRepos, GenderRepos>();
@@ -97,7 +99,7 @@ namespace Covid19Testing
             }
 
             //app.UseStatusCodePages(); //works fine
-            //app.UseStatusCodePagesWithReExecute("/Home/Error", "?code={0}");
+            app.UseStatusCodePagesWithReExecute("/Home/Error", "?code={0}");
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

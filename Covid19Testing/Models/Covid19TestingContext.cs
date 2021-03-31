@@ -16,13 +16,16 @@ namespace Covid19Testing.Models
         }
 
         public virtual DbSet<TblBiodata> TblBiodata { get; set; }
+        public virtual DbSet<TblEmailGroupMapping> TblEmailGroupMapping { get; set; }
         public virtual DbSet<TblLabTests> TblLabTests { get; set; }
         public virtual DbSet<TblLabTestsIndicatorsValues> TblLabTestsIndicatorsValues { get; set; }
         public virtual DbSet<TblLabTestsSpecimen> TblLabTestsSpecimen { get; set; }
+        public virtual DbSet<TblMailingLists> TblMailingLists { get; set; }
         public virtual DbSet<TblRoles> TblRoles { get; set; }
         public virtual DbSet<TblUsers> TblUsers { get; set; }
         public virtual DbSet<TblUsersProfiles> TblUsersProfiles { get; set; }
         public virtual DbSet<TlkpGenders> TlkpGenders { get; set; }
+        public virtual DbSet<TlkpMailingGroups> TlkpMailingGroups { get; set; }
         public virtual DbSet<TlkpResults> TlkpResults { get; set; }
         public virtual DbSet<TlkpSpecimen> TlkpSpecimen { get; set; }
         public virtual DbSet<TlkpStaticInfo> TlkpStaticInfo { get; set; }
@@ -33,7 +36,7 @@ namespace Covid19Testing.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
                 optionsBuilder.UseSqlServer("Server=mdgw10dtm\\mssqlserver16;Database=Covid19Testing;Trusted_Connection=True;");
             }
         }
@@ -44,11 +47,20 @@ namespace Covid19Testing.Models
             {
                 entity.ToTable("tblBiodata");
 
+                entity.HasIndex(e => e.EpidNo)
+                    .HasName("IX_tblBiodata")
+                    .IsUnique();
+
                 entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.Dateofbirth)
                     .HasColumnName("dateofbirth")
-                    .HasColumnType("date");
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.Email)
+                    .HasColumnName("email")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.EpidNo)
                     .HasColumnName("epid_no")
@@ -63,19 +75,11 @@ namespace Covid19Testing.Models
                 entity.Property(e => e.Gender).HasColumnName("gender");
 
                 entity.Property(e => e.HomePhone)
-                    //.IsRequired()
                     .HasColumnName("home_phone")
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.LocalPhone)
-                    .IsRequired()
-                    .HasColumnName("local_phone")
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
-
                 entity.Property(e => e.InsertBy)
-                    .IsRequired()
                     .HasColumnName("insert_by")
                     .HasMaxLength(50)
                     .IsUnicode(false);
@@ -89,6 +93,11 @@ namespace Covid19Testing.Models
                     .HasMaxLength(200)
                     .IsUnicode(false);
 
+                entity.Property(e => e.LocalPhone)
+                    .HasColumnName("local_phone")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.ResidentialAddress)
                     .IsRequired()
                     .HasColumnName("residential_address")
@@ -96,7 +105,6 @@ namespace Covid19Testing.Models
                     .IsUnicode(false);
 
                 entity.Property(e => e.UpdateBy)
-                    .IsRequired()
                     .HasColumnName("update_by")
                     .HasMaxLength(50)
                     .IsUnicode(false);
@@ -112,16 +120,54 @@ namespace Covid19Testing.Models
                     .HasConstraintName("FK_tblBiodata_tlkpGenders");
             });
 
+            modelBuilder.Entity<TblEmailGroupMapping>(entity =>
+            {
+                entity.ToTable("tblEmailGroupMapping");
+
+                entity.HasIndex(e => new { e.Email, e.MailingGroup })
+                    .HasName("IX_tblEmailGroupMapping")
+                    .IsUnique();
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Email).HasColumnName("email");
+
+                entity.Property(e => e.MailingGroup).HasColumnName("mailing_group");
+
+                entity.HasOne(d => d.EmailNavigation)
+                    .WithMany(p => p.TblEmailGroupMapping)
+                    .HasForeignKey(d => d.Email)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_tblEmailGroupMapping_tblMailingLists");
+
+                entity.HasOne(d => d.MailingGroupNavigation)
+                    .WithMany(p => p.TblEmailGroupMapping)
+                    .HasForeignKey(d => d.MailingGroup)
+                    .HasConstraintName("FK_tblEmailGroupMapping_tlkpMailingGroups");
+            });
+
             modelBuilder.Entity<TblLabTests>(entity =>
             {
                 entity.ToTable("tblLabTests");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
+                entity.Property(e => e.Approved).HasColumnName("approved");
+
+                entity.Property(e => e.Archived).HasColumnName("archived");
+
+                entity.Property(e => e.ArchivedBy)
+                    .HasColumnName("archived_by")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ArchivedTime)
+                    .HasColumnName("archived_time")
+                    .HasColumnType("datetime");
+
                 entity.Property(e => e.Biodata).HasColumnName("biodata");
 
                 entity.Property(e => e.InsertBy)
-                    .IsRequired()
                     .HasColumnName("insert_by")
                     .HasMaxLength(50)
                     .IsUnicode(false);
@@ -151,7 +197,6 @@ namespace Covid19Testing.Models
                     .HasColumnType("time(0)");
 
                 entity.Property(e => e.UpdateBy)
-                    .IsRequired()
                     .HasColumnName("update_by")
                     .HasMaxLength(50)
                     .IsUnicode(false);
@@ -159,10 +204,6 @@ namespace Covid19Testing.Models
                 entity.Property(e => e.UpdateTime)
                     .HasColumnName("update_time")
                     .HasColumnType("datetime");
-
-                entity.Property(e => e.Approved)
-                    .HasColumnName("approved")
-                    .HasColumnType("bit");
 
                 entity.HasOne(d => d.BiodataNavigation)
                     .WithMany(p => p.TblLabTests)
@@ -188,7 +229,6 @@ namespace Covid19Testing.Models
                 entity.Property(e => e.IndicatorValue).HasColumnName("indicator_value");
 
                 entity.Property(e => e.InsertBy)
-                    .IsRequired()
                     .HasColumnName("insert_by")
                     .HasMaxLength(50)
                     .IsUnicode(false);
@@ -202,7 +242,6 @@ namespace Covid19Testing.Models
                 entity.Property(e => e.Method).HasColumnName("method");
 
                 entity.Property(e => e.UpdateBy)
-                    .IsRequired()
                     .HasColumnName("update_by")
                     .HasMaxLength(50)
                     .IsUnicode(false);
@@ -235,8 +274,9 @@ namespace Covid19Testing.Models
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
+                entity.Property(e => e.Checked).HasColumnName("checked");
+
                 entity.Property(e => e.InsertBy)
-                    .IsRequired()
                     .HasColumnName("insert_by")
                     .HasMaxLength(50)
                     .IsUnicode(false);
@@ -244,10 +284,6 @@ namespace Covid19Testing.Models
                 entity.Property(e => e.InsertTime)
                     .HasColumnName("insert_time")
                     .HasColumnType("datetime");
-
-                entity.Property(e => e.Checked)
-                    .HasColumnName("checked")
-                    .HasColumnType("bit");
 
                 entity.Property(e => e.Labtest).HasColumnName("labtest");
 
@@ -259,7 +295,6 @@ namespace Covid19Testing.Models
                     .IsUnicode(false);
 
                 entity.Property(e => e.UpdateBy)
-                    .IsRequired()
                     .HasColumnName("update_by")
                     .HasMaxLength(50)
                     .IsUnicode(false);
@@ -279,6 +314,28 @@ namespace Covid19Testing.Models
                     .HasForeignKey(d => d.Specimen)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_tblLabTestsSpecimen_tlkpSpecimen");
+            });
+
+            modelBuilder.Entity<TblMailingLists>(entity =>
+            {
+                entity.ToTable("tblMailingLists");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Email)
+                    .IsRequired()
+                    .HasColumnName("email")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.InsertBy)
+                    .HasColumnName("insert_by")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.InsertTime)
+                    .HasColumnName("insert_time")
+                    .HasColumnType("datetime");
             });
 
             modelBuilder.Entity<TblRoles>(entity =>
@@ -320,7 +377,6 @@ namespace Covid19Testing.Models
                     .HasColumnType("datetime");
 
                 entity.Property(e => e.LastunlockedBy)
-                    .IsRequired()
                     .HasColumnName("lastunlocked_by")
                     .HasMaxLength(50)
                     .IsUnicode(false);
@@ -335,7 +391,6 @@ namespace Covid19Testing.Models
                     .IsUnicode(false);
 
                 entity.Property(e => e.UpdateBy)
-                    .IsRequired()
                     .HasColumnName("update_by")
                     .HasMaxLength(50)
                     .IsUnicode(false);
@@ -396,6 +451,20 @@ namespace Covid19Testing.Models
                 entity.Property(e => e.Gender)
                     .HasColumnName("gender")
                     .HasMaxLength(50)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<TlkpMailingGroups>(entity =>
+            {
+                entity.ToTable("tlkpMailingGroups");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.GroupName)
+                    .HasColumnName("group_name")
+                    .HasMaxLength(100)
                     .IsUnicode(false);
             });
 

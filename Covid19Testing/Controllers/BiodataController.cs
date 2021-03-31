@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Covid19Testing.Controllers
 {
-    //[Authorize(Roles = "dataentry5")]
+    [Authorize(Roles = "dataentry5")]
     public class BiodataController : Controller
     {
         //private readonly Covid19TestingContext _context;
@@ -205,6 +205,7 @@ namespace Covid19Testing.Controllers
         }
 
         // GET: Biodata/Delete/5
+        [Authorize(Roles ="administrator")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)

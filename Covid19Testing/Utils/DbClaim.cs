@@ -28,6 +28,15 @@ namespace Covid19Testing.Utils
             
             var user = Context.TblUsers
                 .FirstOrDefault(u => u.Username == userName);
+
+            if (user == null) {
+                user = new TblUsers { Username = userName, UpdateBy= userName };
+                //user.InsertTime = DateTime.Now;
+                Context.TblUsers.Add(user);
+                Context.SaveChanges();
+
+            }
+
             var role = user==null?0:user.Userrole;
 
             var roles = Context.TblRoles;

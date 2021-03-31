@@ -469,7 +469,7 @@ namespace Covid19Testing.Controllers
 
             ViewData["Results"] = results;
 
-            ViewData["Method"] = new SelectList(methods.GetAll(), "Id", "Methodname");
+            ViewData["Method"] = new SelectList(methods.GetAll(), "Id", "Methodname", _labTest.LabTest.Method);
             /*ViewData["Biodata"] = new SelectList(_context.TblBiodata, "Id", "Fullname", tblLabTests.Biodata);
             ViewData["Method"] = new SelectList(_context.TlkpTestMethods, "Id", "InsertBy", tblLabTests.Method);*/
             TblBiodata _Biodata = biodata.GetById(_labTest.BioData.Id);

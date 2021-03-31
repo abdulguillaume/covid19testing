@@ -86,11 +86,11 @@ namespace Covid19Testing.Controllers
             }
             //_user.Id = 10; //Dummy number
 
-            var errors = ModelState.Values;
-            foreach (var e in errors)
-            {
-                ;
-            }
+            //var errors = ModelState.Values;
+            //foreach (var e in errors)
+            //{
+            //    ;
+            //}
 
             if (ModelState.IsValid)
             {

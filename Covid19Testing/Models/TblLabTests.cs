@@ -40,6 +40,9 @@ namespace Covid19Testing.Models
         [DisplayName("Updated by")]
         public string UpdateBy { get; set; }
         public bool? Approved { get; set; }
+        public bool? Archived { get; set; }
+        public DateTime? ArchivedTime { get; set; }
+        public string ArchivedBy { get; set; }
 
         public TblBiodata BiodataNavigation { get; set; }
         public TlkpTestMethods MethodNavigation { get; set; }

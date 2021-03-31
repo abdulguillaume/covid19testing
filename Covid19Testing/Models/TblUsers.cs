@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Covid19Testing.Models
 {
@@ -10,9 +11,10 @@ namespace Covid19Testing.Models
         public string Username { get; set; }
         [DisplayName("Role")]
         public int Userrole { get; set; }
-        public DateTime InsertTime { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public DateTime? InsertTime { get; set; }
         [DisplayName("Last unlocked on")]
-        public DateTime LastunlockTime { get; set; }
+        public DateTime? LastunlockTime { get; set; }
         [DisplayName("Last unlocked by")]
         public string LastunlockedBy { get; set; }
         [DisplayName("Locked on")]

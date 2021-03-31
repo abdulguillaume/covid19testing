@@ -20,7 +20,7 @@ namespace Covid19Testing.Models
         [Required(ErrorMessage = "*", AllowEmptyStrings = false)]
         [DisplayName("DOB")]
         public DateTime Dateofbirth { get; set; }
-        [Required(ErrorMessage = "*", AllowEmptyStrings =false)]
+        [Required(ErrorMessage = "*", AllowEmptyStrings = false)]
         public int Gender { get; set; }
         [DisplayName("EPID-NO")]
         [Required(ErrorMessage = "*", AllowEmptyStrings = false)]
@@ -46,6 +46,9 @@ namespace Covid19Testing.Models
         public DateTime? UpdateTime { get; set; }
         [DisplayName("Updated by")]
         public string UpdateBy { get; set; }
+        [DataType(DataType.EmailAddress)]
+        [EmailAddress]
+        public string Email { get; set; }
 
         public TlkpGenders GenderNavigation { get; set; }
         public ICollection<TblLabTests> TblLabTests { get; set; }

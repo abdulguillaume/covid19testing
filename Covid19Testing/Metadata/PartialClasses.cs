@@ -55,4 +55,9 @@ namespace Covid19Testing.Models
         [NotMapped]
         public bool locked { get { return LockTime != null; } set {; } }
     }
+
+    public partial class TblEmailGroupMapping {
+        [NotMapped]
+        public bool add { get; set; } = false;
+    }
 }
