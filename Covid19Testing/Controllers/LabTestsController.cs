@@ -18,12 +18,23 @@ using Syncfusion.DocIO;
 using Syncfusion.DocIO.DLS;
 using System.IO;
 
+using Covid19Testing.Utils;
+
 
 using Syncfusion.Pdf;
 using Syncfusion.Pdf.Barcode;
 using Syncfusion.Drawing;
 using Syncfusion.DocIORenderer;
 using Microsoft.AspNetCore.Authorization;
+
+using MailKit.Net.Smtp;
+using MimeKit;
+using System.Net.Mime;
+using System.Net;
+using System.Net.Mail;
+//using System.Net.Mail;
+//using SmtpClient = System.Net.Mail.SmtpClient;
+//using System.Net;
 
 namespace Covid19Testing.Controllers
 {
@@ -193,6 +204,82 @@ namespace Covid19Testing.Controllers
             return Json(response, new JsonSerializerSettings());
         }
 
+        [HttpPost]
+        public async Task<IActionResult> ShareDocument(int Id, string emails)
+        {
+            ActionResponse response = new ActionResponse { };
+
+            FileContentResult file = (FileContentResult)await GenerateDocument(Id);
+
+            var LabTest = tests.GetById(Id);
+
+            string testing_date = Utils.Utils.toShortdate(LabTest.LabTest.TestingDate);
+
+            string filename = string.Format("Covid19-{0}-{1}.pdf",LabTest.BioData.EpidNo, testing_date);
+
+            Attachment data = new Attachment(new MemoryStream(file.FileContents),filename, MediaTypeNames.Application.Octet);
+
+            // Gmail Address from where you send the mail 
+            var fromAddress = "abdulguillaume@gmail.com";
+            // any address where the email will be sending 
+            //var toAddress = "aguillaume@iom.int";
+            //Password of your gmail address 
+            const string fromPassword = "pigyhssujyscavyv";
+
+            
+
+            MailMessage message = new MailMessage();
+            message.IsBodyHtml = true;
+            message.From = new MailAddress(fromAddress);
+
+            foreach (var e in emails.Split(";"))
+            {
+                message.To.Add(new MailAddress(e));
+            }
+            //message.To.Add(new MailAddress(toAddress));
+            //message.To.Add(new MailAddress("malabi@iom.int"));
+            message.Subject = string.Format("Covid19 Test Result, {0}", testing_date);
+            string body = "Greetings, <br />";
+            body += string.Format("Covid19 Test Result for candicate EPID-No: {0}, Fullname: {1} <br />" , LabTest.BioData.EpidNo, LabTest.BioData.Fullname);
+            body += "Regards <br />";
+            body += "UN Migration/IOM/MHAC";
+            message.Body = body;//@"Using this new feature, you can send an email message from an application very easily.";
+            // smtp settings 
+            message.Attachments.Add(data);
+
+            var smtp = new System.Net.Mail.SmtpClient();
+            {
+                smtp.Host = "smtp.gmail.com";
+                smtp.Port = 587; smtp.EnableSsl = true;
+                smtp.DeliveryMethod = System.Net.Mail.SmtpDeliveryMethod.Network;
+                smtp.Credentials = new NetworkCredential(fromAddress, fromPassword);
+                smtp.Timeout = 0;
+
+                try
+                {
+                    smtp.Send(message);
+                    LabTest.LabTest.SentEmailBy = User.Identity.Name;
+                    LabTest.LabTest.SentEmailTime = DateTime.Now;
+                    tests.Update(LabTest);
+
+                    response.IsSuccessful = true;
+                    response.Message = "n/a";
+                    //response.JSONData = JsonConvert.SerializeObject(Indicators);
+                }
+                catch (Exception ex)
+                {
+                    //Console.WriteLine("Exception caught in CreateTestMessage2(): {0}",
+                    //    ex.ToString());
+                    response.IsSuccessful = false;
+                    response.Message = ex.Message;
+                    //response.JSONData = JsonConvert.SerializeObject(Indicators);
+                }
+            }
+
+
+            return Json(response, new JsonSerializerSettings());
+        }
+
         [HttpGet]
         public async Task<IActionResult> GenerateDocument(int Id)
         {
@@ -256,9 +343,11 @@ namespace Covid19Testing.Controllers
             p.AppendText(LabTest.BioData.EpidNo);
 
             //skip 5 for local phone number
+            p = (WParagraph)table.Rows[5].Cells[1].ChildEntities[0];
+            p.AppendText(LabTest.BioData.LocalPhone ?? "-");
 
             p = (WParagraph)table.Rows[6].Cells[1].ChildEntities[0];
-            p.AppendText(LabTest.BioData.HomePhone);
+            p.AppendText(LabTest.BioData.HomePhone??"-");
 
             p = (WParagraph)table.Rows[7].Cells[1].ChildEntities[0];
             p.AppendText(LabTest.BioData.ResidentialAddress);
@@ -536,11 +625,11 @@ namespace Covid19Testing.Controllers
             }
 
 
-            //var errors = ModelState.Values;
-            //foreach (var e in errors)
-            //{
-            //        ;
-            //}
+            var errors = ModelState.Values;
+            foreach (var e in errors)
+            {
+                ;
+            }
 
             if (ModelState.IsValid)
             {

@@ -39,6 +39,14 @@
         <dd>
             @Html.DisplayFor(model => model.BioData.GenderNavigation.Gender)
         </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.BioData.Email)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BioData.Email)
+        </dd>
+
         <dt>
             @Html.DisplayNameFor(model => model.BioData.EpidNo)
         </dt>
@@ -80,6 +88,7 @@
             <input asp-for="@Model.BioData.LegalGardianName" class="form-control" type="hidden" />
             <input asp-for="@Model.BioData.Dateofbirth" class="form-control" type="hidden" />
             <input asp-for="@Model.BioData.Gender" class="form-control" type="hidden" />
+            <input asp-for="@Model.BioData.Email" class="form-control" type="hidden" />
             <input asp-for="@Model.BioData.EpidNo" class="form-control" type="hidden" />
             <input asp-for="@Model.BioData.LocalPhone" class="form-control" type="hidden" />
             <input asp-for="@Model.BioData.HomePhone" class="form-control" type="hidden" />
@@ -105,10 +114,10 @@
                 {
                     <div class="form-group">
                         @*@Html.HiddenFor(m => m.Indicators[i].Method)
-                            @Html.HiddenFor(m => m.Indicators[i].Indicator)
+                    @Html.HiddenFor(m => m.Indicators[i].Indicator)
 
-                            @Html.DisplayFor(m => m.Indicators[i].IndicatorName, new { @class = "form-control" })
-                            @Html.EditorFor(m => m.Indicators[i].IndicatorValue, new { @class = "form-control" })*@
+                    @Html.DisplayFor(m => m.Indicators[i].IndicatorName, new { @class = "form-control" })
+                    @Html.EditorFor(m => m.Indicators[i].IndicatorValue, new { @class = "form-control" })*@
                         <input asp-for="@Model.Indicators[@i].Id" value="@Model.Indicators[@i].Id" type="hidden" />
                         <input asp-for="@Model.Indicators[@i].IndicatorName" value="@Model.Indicators[@i].IndicatorName" type="hidden" />
                         <input asp-for="@Model.Indicators[@i].Labtest" value="@Model.Indicators[@i].Labtest" type="hidden" />
@@ -139,14 +148,14 @@
                 <label asp-for="@Model.LabTest.Interpretation" class="control-label"></label>
 
                 @*@if (Model.LabTest.Interpretation != 97)
-                    {
-                        <input asp-for="@Model.LabTest.Interpretation" class="form-control" type="hidden" />
-                        <select asp-for="@Model.LabTest.Interpretation" class="form-control" asp-items="ViewBag.Results" disabled>
-                            <option value="97">NO RESULT</option>
-                        </select>
-                    }
-                    else
-                    {*@
+            {
+                <input asp-for="@Model.LabTest.Interpretation" class="form-control" type="hidden" />
+                <select asp-for="@Model.LabTest.Interpretation" class="form-control" asp-items="ViewBag.Results" disabled>
+                    <option value="97">NO RESULT</option>
+                </select>
+            }
+            else
+            {*@
                 <select asp-for="@Model.LabTest.Interpretation" class="form-control" asp-items="ViewBag.Results">
                     <option value="97">NO RESULT</option>
                 </select>
@@ -234,11 +243,11 @@
 
 
                             @*@Html.HiddenFor(m => m.Specimen[i].Specimen)
-                                @Html.HiddenFor(m => m.Specimen[i].SpecimenName)
-                                @Html.DisplayFor(m => m.Specimen[i].SpecimenName)
-                                @Html.CheckBoxFor(m => m.Specimen[i].Checked)*@
+                        @Html.HiddenFor(m => m.Specimen[i].SpecimenName)
+                        @Html.DisplayFor(m => m.Specimen[i].SpecimenName)
+                        @Html.CheckBoxFor(m => m.Specimen[i].Checked)*@
                             @*<input asp-for="InsertTime" class="form-control" />
-                                <span asp-validation-for="InsertTime" class="text-danger"></span>*@
+                        <span asp-validation-for="InsertTime" class="text-danger"></span>*@
 
 
                         }

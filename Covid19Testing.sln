@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.421
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Covid19Testing", "Covid19Testing\Covid19Testing.csproj", "{7B536516-4EA4-412A-B9CC-6C8930BBB53A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Covid19Testing", "Covid19Testing\Covid19Testing.csproj", "{7B536516-4EA4-412A-B9CC-6C8930BBB53A}"
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Covid19TestingDB", "Covid19TestingDB\Covid19TestingDB.sqlproj", "{6C06E0A5-731A-4823-A7E1-342A472402A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CovidTestingServer", "CovidTestingServer\CovidTestingServer.csproj", "{F1287DE7-7C4D-47D7-A961-C9C7902A6A99}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,6 +25,10 @@ Global
 		{6C06E0A5-731A-4823-A7E1-342A472402A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C06E0A5-731A-4823-A7E1-342A472402A3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6C06E0A5-731A-4823-A7E1-342A472402A3}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{F1287DE7-7C4D-47D7-A961-C9C7902A6A99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1287DE7-7C4D-47D7-A961-C9C7902A6A99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1287DE7-7C4D-47D7-A961-C9C7902A6A99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1287DE7-7C4D-47D7-A961-C9C7902A6A99}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

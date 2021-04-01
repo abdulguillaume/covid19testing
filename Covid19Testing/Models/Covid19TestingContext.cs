@@ -32,14 +32,14 @@ namespace Covid19Testing.Models
         public virtual DbSet<TlkpTestIndicators> TlkpTestIndicators { get; set; }
         public virtual DbSet<TlkpTestMethods> TlkpTestMethods { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=mdgw10dtm\\mssqlserver16;Database=Covid19Testing;Trusted_Connection=True;");
-            }
-        }
+//        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+//        {
+////            if (!optionsBuilder.IsConfigured)
+////            {
+////#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+////                optionsBuilder.UseSqlServer("Server=mdgw10dtm\\mssqlserver16;Database=Covid19Testing;Trusted_Connection=True;");
+////            }
+//        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -204,6 +204,24 @@ namespace Covid19Testing.Models
                 entity.Property(e => e.UpdateTime)
                     .HasColumnName("update_time")
                     .HasColumnType("datetime");
+
+                entity.Property(e => e.PushedSvrTime)
+                    .HasColumnName("pushed_svr_time")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.SentEmailTime)
+                    .HasColumnName("sent_email_time")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.PushedSvrBy)
+                    .HasColumnName("pushed_svr_by")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SentEmailBy)
+                    .HasColumnName("sent_email_by")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
                 entity.HasOne(d => d.BiodataNavigation)
                     .WithMany(p => p.TblLabTests)

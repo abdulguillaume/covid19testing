@@ -55,11 +55,27 @@
             </td>
 
             <td>
-                @Html.DisplayFor(modelItem => item.LockTime)
+                @if (item.LockTime == null)
+                {
+                    @Html.Raw("-")
+                }
+                else
+                {
+                    @Html.DisplayFor(modelItem => item.LockTime)
+
+                }
+
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.LockedBy)
-            </td>
+                @if (item.LockedBy == null)
+                {
+                    @Html.Raw("-")
+                }
+                else
+                {
+                    @Html.DisplayFor(modelItem => item.LockedBy)
+                }
+                </td>
 
 
             <td>

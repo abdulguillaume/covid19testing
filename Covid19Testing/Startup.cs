@@ -55,19 +55,19 @@ namespace Covid19Testing
                 options.IdleTimeout = TimeSpan.FromMinutes(1);
             });
 
-            services.AddScoped<IClaimsTransformation, DbClaim>();
-
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddDbContext<Covid19TestingContext>(options => options.UseSqlServer(
                  Configuration.GetConnectionString("DefaultConnection")
                ));
 
+            services.AddScoped<IClaimsTransformation, DbClaim>();
+
             //services.AddScoped<Covid19TestingContext>();
 
             //services.AddSession()
 
-            
+
             services.AddScoped<IMailingRepos, MailingRepos>();
             services.AddScoped<IUserRepos, UserRepos>();
 

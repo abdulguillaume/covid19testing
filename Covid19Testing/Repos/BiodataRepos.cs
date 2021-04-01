@@ -100,6 +100,7 @@ namespace Covid19Testing.Repos
                 subject.Fullname = obj.Fullname;
                 subject.LegalGardianName = obj.LegalGardianName;
                 subject.Dateofbirth = DateTime.Parse(obj.Dateofbirth.ToShortDateString());
+                subject.Email = obj.Email;
                 subject.EpidNo = obj.EpidNo;
                 subject.LocalPhone = obj.LocalPhone;
                 subject.HomePhone = obj.HomePhone;

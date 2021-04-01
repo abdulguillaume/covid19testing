@@ -12,9 +12,9 @@ namespace Covid19Testing.Utils
 {
     public class DbClaim : IClaimsTransformation
     {
-        public DbClaim()
+        public DbClaim(Covid19TestingContext _Context)
         {
-            Context = new Covid19TestingContext();
+            Context = _Context;// new Covid19TestingContext();
         }
 
         public Covid19TestingContext Context { get; }

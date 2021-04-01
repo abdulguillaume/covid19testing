@@ -41,26 +41,53 @@
             @Html.DisplayNameFor(model => model.LockTime)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.LockTime)
+            @if (Model.LockTime == null)
+            {
+                @Html.Raw("-")
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.LockTime)
+            }
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.LockedBy)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.LockedBy)
+            @if (Model.LockedBy == null)
+            {
+                @Html.Raw("-")
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.LockedBy)
+            }
         </dd>
 
         <dt>
             @Html.DisplayNameFor(model => model.LastunlockTime)
         </dt>
         <dd>
+            @if (Model.LastunlockTime == null)
+            {
+                @Html.Raw("-")
+            }
+            else { 
             @Html.DisplayFor(model => model.LastunlockTime)
+            }
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.LastunlockedBy)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.LastunlockedBy)
+            @if (Model.LastunlockedBy == null)
+            {
+                @Html.Raw("-")
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.LastunlockedBy)
+            }
         </dd>
 
 

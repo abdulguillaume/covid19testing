@@ -119,7 +119,7 @@ namespace Covid19Testing.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Fullname,LegalGardianName,Dateofbirth,Gender,EpidNo,LocalPhone,HomePhone,ResidentialAddress,InsertTime,InsertBy,UpdateTime,UpdateBy")] TblBiodata tblBiodata)
+        public async Task<IActionResult> Create([Bind("Id,Fullname,LegalGardianName,Dateofbirth,Gender,Email,EpidNo,LocalPhone,HomePhone,ResidentialAddress,InsertTime,InsertBy,UpdateTime,UpdateBy")] TblBiodata tblBiodata)
         {
             try
             {
@@ -166,7 +166,7 @@ namespace Covid19Testing.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Fullname,LegalGardianName,Dateofbirth,Gender,EpidNo,HomePhone,LocalPhone,ResidentialAddress,InsertTime,InsertBy,UpdateTime,UpdateBy")] TblBiodata tblBiodata)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Fullname,LegalGardianName,Dateofbirth,Gender,Email,EpidNo,HomePhone,LocalPhone,ResidentialAddress,InsertTime,InsertBy,UpdateTime,UpdateBy")] TblBiodata tblBiodata)
         {
             if (id != tblBiodata.Id)
             {

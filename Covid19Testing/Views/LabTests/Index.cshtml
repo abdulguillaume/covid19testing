@@ -19,7 +19,8 @@
 <hr />
 
 <p align="right">
-    <a asp-action="xx">Export to Excel (NOK)</a>
+    <a asp-action="xx">Export to Excel (NOK)</a> |
+    <a asp-action="xx">Published Approved Results</a>
 </p>
 
 <form method="get" asp-controller="LabTests" asp-action="search">
@@ -58,21 +59,22 @@
                 Testing date
             </th>
             <th>
-                Testing time
-            </th>
-            <th>
                 Interpretation
             </th>
             <th>
                 Reporting date
             </th>
             <th>
-                Reporting time
+                Approval
+            </th>
+            <th>
+                Email Sent
+            </th>
+            <th>
+                Published
             </th>
 
-            <th>
-                Status
-            </th>
+
             <th></th>
         </tr>
     </thead>
@@ -90,84 +92,89 @@
             @foreach (var item in Model)
             {
 
-                <tr>
-                    <td>
+            <tr>
+                <td>
 
-                        <a data-toggle="modal" data-target="#show-biodata" class="biodatalink" data-id="@item.BioData.Id">
-                            @Html.DisplayFor(modelItem => item.BioData.EpidNo)
-                        </a>
+                    <a data-toggle="modal" data-target="#show-biodata" class="biodatalink" data-id="@item.BioData.Id">
+                        @Html.DisplayFor(modelItem => item.BioData.EpidNo)
+                    </a>
 
 
-                    </td>
-                    <td>
-                        @Utils.toShortdate(@item.LabTest.TestingDate)
-                    </td>
-                    <td>
-                        @Utils.time12Hr(@item.LabTest.TestingTime)
-                        @*@Html.DisplayFor(modelItem => Utils.time12Hr(@item.LabTest.TestingTime))*@
-                    </td>
-                    @{
-                        //"lightskyblue"
-                        string @style = (item.LabTest.Interpretation == 1) ? "red" : (item.LabTest.Interpretation == 2) ? "greenyellow" : "lightgray";
+                </td>
+                <td>
+                    @Utils.toShortdate(@item.LabTest.TestingDate) @Utils.time12Hr(@item.LabTest.TestingTime)
+                </td>
+                @*<td>
+            @Utils.time12Hr(@item.LabTest.TestingTime)
+        </td>*@
+                @{
+                    //"lightskyblue"
+                    string @style = (item.LabTest.Interpretation == 1) ? "red" : (item.LabTest.Interpretation == 2) ? "greenyellow" : "lightgray";
+                }
+                <td style="background-color: @style ">
+                    @if (item.LabTest.Interpretation == 97)
+                    {
+                        @Html.Raw("NO RESULT")
                     }
-                    <td style="background-color: @style ">
-                        @if (item.LabTest.Interpretation == 97)
-                        {
-                            @Html.Raw("NO RESULT")
-                        }
-                        else if (item.LabTest.Interpretation == 1)
-                        {
-                            @Html.Raw("POSITIVE")
-                        }
-                        else if (item.LabTest.Interpretation == 2)
-                        {
-                            @Html.Raw("NEGATIVE")
-                        }
-                        else
-                        {
-                            @Html.Raw("-")
-                        }
-                    </td>
-                    <td>
+                    else if (item.LabTest.Interpretation == 1)
+                    {
+                        @Html.Raw("POSITIVE")
+                    }
+                    else if (item.LabTest.Interpretation == 2)
+                    {
+                        @Html.Raw("NEGATIVE")
+                    }
+                    else
+                    {
+                        @Html.Raw("-")
+                    }
+                </td>
+                <td>
 
-                        @Utils.toShortdate(@item.LabTest.ReportingDate)
+                    @Utils.toShortdate(@item.LabTest.ReportingDate) @Utils.time12Hr(@item.LabTest.ReportingTime)
 
-                    </td>
-                    <td>
-                        @Utils.time12Hr(@item.LabTest.ReportingTime)
-                        @*@Html.DisplayFor(modelItem => Utils.time12Hr(@item.LabTest.ReportingTime))*@
-                    </td>
+                </td>
+                @*<td>
+            @Utils.time12Hr(@item.LabTest.ReportingTime)
+        </td>*@
 
-                    @{
-                        string isapproved = "-";
-                        style = "none";
+                @{
+                    string isapproved = "-";
+                    style = "none";
 
-                        if (@item.LabTest.Approved.HasValue && @item.LabTest.Approved.Value)
-                        {
-                            isapproved = "APPROVED";
-                            style = "greenyellow";
-                        }
-                        else if (item.LabTest.Interpretation != 97)
-                        {
-                            isapproved = "PENDING";
-                        }
-
+                    if (@item.LabTest.Approved.HasValue && @item.LabTest.Approved.Value)
+                    {
+                        isapproved = "APPROVED";
+                        style = "greenyellow";
+                    }
+                    else if (item.LabTest.Interpretation != 97)
+                    {
+                        isapproved = "PENDING";
                     }
 
-                    <td style="background-color: @style">
-                        @isapproved
-                    </td>
-                    <td>
-                        @if (item.LabTest.Approved == null || !item.LabTest.Approved.Value)
-                        {
-                            <a asp-action="Edit" asp-route-id="@item.LabTest.Id">Edit</a> @Html.Raw("|")
+                }
 
-                        }
+                <td style="background-color: @style">
+                    @isapproved
+                </td>
 
-                        <a asp-action="Details" asp-route-id="@item.LabTest.Id">Details</a> |
-                        <a asp-action="Delete" asp-route-id="@item.LabTest.Id">Delete</a>
-                    </td>
-                </tr>
+                <td>
+                    @Utils.toShortdate(@item.LabTest.SentEmailTime)
+                </td>
+                <td>
+                    @Utils.toShortdate(@item.LabTest.PushedSvrTime)
+                </td>
+                <td>
+                    @if (item.LabTest.Approved == null || !item.LabTest.Approved.Value)
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.LabTest.Id">Edit</a> @Html.Raw("|")
+
+                    }
+
+                    <a asp-action="Details" asp-route-id="@item.LabTest.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.LabTest.Id">Delete</a>
+                </td>
+            </tr>
             }
 
         }

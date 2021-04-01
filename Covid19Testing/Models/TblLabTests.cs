@@ -44,6 +44,12 @@ namespace Covid19Testing.Models
         public DateTime? ArchivedTime { get; set; }
         public string ArchivedBy { get; set; }
 
+        public DateTime? PushedSvrTime { get; set; }
+        public DateTime? SentEmailTime { get; set; }
+
+        public string PushedSvrBy { get; set; }
+        public string SentEmailBy { get; set; }
+
         public TblBiodata BiodataNavigation { get; set; }
         public TlkpTestMethods MethodNavigation { get; set; }
         public ICollection<TblLabTestsIndicatorsValues> TblLabTestsIndicatorsValues { get; set; }

@@ -10,6 +10,26 @@ var confirmModalCallback = null;
 
 var alertModalCallback = null;
 
+function showModal() {
+
+    debugger;
+
+    $("#wait-modal").modal("show");
+
+    //$('body').loadingModal({
+    //    position: 'auto',
+    //    text: text,
+    //    color: '#fff',
+    //    opacity: '0.7',
+    //    backgroundColor: 'rgb(0,0,0)',
+    //    animation: 'doubleBounce'
+    //});
+}
+
+function hideModal() {
+    $('body').loadingModal('destroy');
+}
+
 function confirm_modal(msg, callback){
   $('#confirm-modal .modal-body').html(msg);
   confirmModalCallback = callback;

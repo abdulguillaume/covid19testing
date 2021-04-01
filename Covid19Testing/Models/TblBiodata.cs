@@ -46,6 +46,7 @@ namespace Covid19Testing.Models
         public DateTime? UpdateTime { get; set; }
         [DisplayName("Updated by")]
         public string UpdateBy { get; set; }
+        [Required(ErrorMessage = "*")]
         [DataType(DataType.EmailAddress)]
         [EmailAddress]
         public string Email { get; set; }

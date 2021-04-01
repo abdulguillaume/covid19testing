@@ -9,30 +9,21 @@
 <h2>COVID-19 TESTING FORM</h2>
 
 <div align="right">
-    <a asp-action="Edit" asp-route-id="@Model.LabTest.Id">Edit</a> |
+    @if (Model.LabTest.Approved == null || !Model.LabTest.Approved.Value)
+    {
+        <a asp-action="Edit" asp-route-id="@Model.LabTest.Id">Edit</a>
+        @Html.Raw("|")
+    }
     <a asp-action="Index">COVID-19 TESTING RESULTs</a>
-
-    @if (ViewBag.Ready && Model.LabTest.Approved)
-    {
-        <form asp-action="GenerateDocument" method="get">
-            <input type="hidden" name="Id" value="@Model.LabTest.Id" />
-            <input type="submit" value="Generate Word" class="btn btn-default" />
-        </form>
-    }
-    else if (ViewBag.Ready && !Model.LabTest.Approved)
-    {
-        @*<form asp-action="ApproveResult" method="get">
-            <input type="hidden" name="Id" value="@Model.LabTest.Id" />*@
-            <input type="submit" value="Approve Result" onclick="approveResult(@Model.LabTest.Id)" class="btn btn-default" />
-        @*</form>*@
-    }
 
 
 </div>
 
-<div  >
+
+<div>
     <h4>Biodata</h4>
     <hr />
+    @Html.HiddenFor(model => model.BioData.Email)
     <dl class="dl-horizontal">
         <dt>
             @Html.DisplayNameFor(model => model.BioData.Fullname)
@@ -58,6 +49,14 @@
         <dd>
             @Html.DisplayFor(model => model.BioData.GenderNavigation.Gender)
         </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.BioData.Email)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BioData.Email)
+        </dd>
+
         <dt>
             @Html.DisplayNameFor(model => model.BioData.EpidNo)
         </dt>
@@ -110,11 +109,11 @@
     </dl>
 </div>
 
-@{ 
+@{
 
     string style = "";
 
-    if (Model.LabTest.Approved!=null && Model.LabTest.Approved.Value)
+    if (Model.LabTest.Approved != null && Model.LabTest.Approved.Value)
     {
         style = "background: url('/Content/approved4.png') no-repeat right;background-size: contain;";
     }
@@ -232,10 +231,101 @@
     </div>
 </div>
 
+<div align="right">
+
+    @if (ViewBag.Ready && Model.LabTest.Approved)
+    {
+        <hr />
+        <label class="control-label">Download the Candidate's Covid19 Test Result.</label>
+
+        <form asp-action="GenerateDocument" method="get">
+            <input type="hidden" name="Id" value="@Model.LabTest.Id" />
+            <input type="submit" value="Download Result" class="btn btn-default" />
+        </form>
+
+        <hr />
+        @*<form asp-action="ShareDocument" method="get">*@
+
+        @if (Model.LabTest.SentEmailTime == null)
+        {
+            <label class="control-label">Candidate has not been notified yet.</label>
+        }
+        else
+        {
+            <label class="control-label">Last email sent on: @Model.LabTest.SentEmailTime</label>
+        }
+        @*<input type="hidden" name="Id" value="@Model.LabTest.Id" />*@
+        <div class="form-group">
+            @*<input type="submit" value="Notify Candidate" class="btn btn-default" />*@
+            <input type="submit" value="Notify Candidate" onclick="notifyCandidate(@Model.LabTest.Id)" class="btn btn-default" />
+        </div>
+
+    }
+    else if (ViewBag.Ready && !Model.LabTest.Approved)
+    {
+        @*<form asp-action="ApproveResult" method="get">
+            <input type="hidden" name="Id" value="@Model.LabTest.Id" />*@
+        <input type="submit" value="Approve Result" onclick="approveResult(@Model.LabTest.Id)" class="btn btn-default" />
+        @*</form>*@
+    }
+
+
+</div>
+
+<partial name="~/ModalPartialViews/_Wait.cshtml" />
 <partial name="~/ModalPartialViews/_Confirm.cshtml" />
 <partial name="~/ModalPartialViews/_Alert.cshtml" />
+<partial name="~/ModalPartialViews/_Input.cshtml" />
+
 
 <script>
+
+    //function notifyCandidateThroughEmail(testid, email) {
+
+ 
+        
+
+    //}
+
+    function notifyCandidateThroughEmail(testid, email) {
+
+
+        $.ajax({
+                type: "POST",
+                url: '@Url.Action("ShareDocument", "LabTests")',
+                data: { Id: testid, emails: email},
+                dataType: 'json',
+                success: function (data) {
+                    if (data.IsSuccessful) {
+
+                        alert_modal("Covid19 Test Result sent.", function () {
+                            location.reload();
+                        });
+
+                    } else {
+                        alert_modal(data.Message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert(xhr.responseText);
+                }
+            });
+
+    }
+
+    function notifyCandidate(testid) {
+        var email = $("#BioData_Email").val();
+
+        if (!email) {
+            input_modal("Send Covid19 Test result to candidate's Email.", "Enter Email Address", function () {
+                notifyCandidateThroughEmail(testid, $inputModalVal);
+            }, "^[a-zA-Z0-9+_.-]{2,20}@('@')[a-zA-Z0-9+_.-]{2,20}[.][[a-zA-Z0-9]{2,5}$", "Not a valid email address!");
+        } else {
+            notifyCandidateThroughEmail(testid, email);
+        }
+
+    }
+
     function approveResult(testid) {
 
         confirm_modal("Confirm Covid19 test result", function () {
@@ -251,7 +341,7 @@
                         alert_modal("Covid19 Test Result Approved.", function () {
                             location.reload();
                         });
-                        
+
                     } else {
                         console.log(data.Message);
                     }
