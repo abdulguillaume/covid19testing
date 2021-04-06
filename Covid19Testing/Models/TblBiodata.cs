@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -52,6 +53,7 @@ namespace Covid19Testing.Models
         public string Email { get; set; }
 
         public TlkpGenders GenderNavigation { get; set; }
+        [JsonIgnore]
         public ICollection<TblLabTests> TblLabTests { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace Covid19Testing.Models
@@ -14,7 +15,7 @@ namespace Covid19Testing.Models
         public DateTime? UpdateTime { get; set; }
         public string UpdateBy { get; set; }
         public bool Checked { get; set; }
-
+        [JsonIgnore]
         public TblLabTests LabtestNavigation { get; set; }
         public TlkpSpecimen SpecimenNavigation { get; set; }
     }

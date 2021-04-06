@@ -260,6 +260,24 @@
             <input type="submit" value="Notify Candidate" onclick="notifyCandidate(@Model.LabTest.Id)" class="btn btn-default" />
         </div>
 
+        <hr />
+
+        @if (Model.LabTest.PushedSvrTime == null)
+        {
+            <label class="control-label">Publish Candidate's Covid19 Test Result.</label>
+            <div class="form-group">
+                @*<input type="submit" value="Notify Candidate" class="btn btn-default" />*@
+                <input type="submit" value="Publish Result" onclick="publishResult(@Model.LabTest.Id)" class="btn btn-default" />
+            </div>
+        }
+        else
+        {
+            <label class="control-label">Covid19 Test Result published on: @Model.LabTest.PushedSvrTime</label>
+        }
+
+
+
+
     }
     else if (ViewBag.Ready && !Model.LabTest.Approved)
     {
@@ -286,6 +304,35 @@
         
 
     //}
+
+    function publishResult(testid) {
+
+        debugger;
+        $.ajax({
+                type: "POST",
+                url: '@Url.Action("PublishResult", "LabTests")',
+                data: { Id: testid},
+                dataType: 'json',
+            success: function (data) {
+
+
+                    if (data.IsSuccessful) {
+
+                        alert_modal(data.Message, function () {
+                            location.reload();
+                        });
+
+                    } else {
+                        alert_modal(data.Message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert(xhr.responseText);
+                }
+            });
+
+
+    }
 
     function notifyCandidateThroughEmail(testid, email) {
 

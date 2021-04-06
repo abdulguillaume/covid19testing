@@ -1,0 +1,216 @@
+﻿@model Covid19TestingServer.Models.TblLabTests
+@using Covid19TestingServer.Utils
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+@{
+
+    var specimen = (Dictionary<int, string>)ViewBag.specimen;
+    var indicators = (Dictionary<int, string>)ViewBag.indicators;
+
+}
+
+<h2>COVID-19 TESTING Result</h2>
+
+
+<div align="right">
+    <a asp-action="Index">Back to Search</a>
+</div>
+
+<div>
+    <h4>Biodata</h4>
+    <hr />
+    @Html.HiddenFor(model => model.BiodataNavigation.Email)
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.BiodataNavigation.Fullname)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BiodataNavigation.Fullname)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.BiodataNavigation.LegalGardianName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BiodataNavigation.LegalGardianName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.BiodataNavigation.Dateofbirth)
+        </dt>
+        <dd>
+            @Utils.toShortdate(@Model.BiodataNavigation.Dateofbirth)
+            @*@Model.BiodataNavigation.Dateofbirth.ToString("dd/MMM/yy")*@
+
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.BiodataNavigation.GenderNavigation.Gender)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BiodataNavigation.GenderNavigation.Gender)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.BiodataNavigation.Email)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BiodataNavigation.Email)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.BiodataNavigation.EpidNo)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BiodataNavigation.EpidNo)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.BiodataNavigation.LocalPhone)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BiodataNavigation.LocalPhone)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.BiodataNavigation.HomePhone)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BiodataNavigation.HomePhone)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.BiodataNavigation.ResidentialAddress)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BiodataNavigation.ResidentialAddress)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.BiodataNavigation.TransferTime)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BiodataNavigation.TransferTime)
+        </dd>
+
+
+    </dl>
+</div>
+
+<h4>Test</h4>
+<hr />
+<div class="row" style="background: url('/Content/approved.png') no-repeat right;background-size: contain;">
+    <div class="col-md-4">
+
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Method)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.MethodNavigation.Methodname)
+            </dd>
+
+            @foreach (var i in Model.TblLabTestsIndicatorsValues)
+            {
+                <dt>
+                    @Html.DisplayFor(model => indicators[i.Indicator])
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => i.IndicatorValue)
+                </dd>
+            }
+
+            <dt>
+                @Html.DisplayNameFor(model => model.TestingDate)
+            </dt>
+            <dd>
+                @Utils.toShortdate(@Model.TestingDate)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.TestingTime)
+            </dt>
+            <dd>
+                @Utils.time12Hr(@Model.TestingTime)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Interpretation)
+            </dt>
+            <dd>
+                @if (@Model.Interpretation == 97)
+                {
+                    @Html.Raw("NO RESULT")
+                }
+                else if (@Model.Interpretation == 1)
+                {
+                    @Html.Raw("POSITIVE")
+                }
+                else if (@Model.Interpretation == 2)
+                {
+                    @Html.Raw("NEGATIVE")
+                }
+                else
+                {
+                    @Html.Raw("-")
+                }
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.ReportingDate)
+            </dt>
+            <dd>
+                @Utils.toShortdate(@Model.ReportingDate)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.ReportingTime)
+            </dt>
+            <dd>
+                @Utils.time12Hr(@Model.ReportingTime)
+
+            </dd>
+
+        </dl>
+
+
+        <hr />
+        <h4 align="center">OFFICIAL USE ONLY</h4>
+
+        <table>
+            @foreach (var s in Model.TblLabTestsSpecimen)
+            {
+                <tr>
+                    <td>
+                        @*<label class="control-label">*@
+
+                        @Html.DisplayFor(model => specimen[s.Specimen])
+                        @*</label>*@
+                    </td>
+                    <td> @Html.CheckBoxFor(model => s.Checked, new { @disabled = "disabled" })</td>
+                    <td>
+
+                        @if (s.Checked && s.Specimen == 99)
+                        {
+                            <label class="control-label"> Specify:</label>
+
+                            @Html.DisplayFor(model => s.SpecimenOther)
+
+                        }
+
+                    </td>
+                </tr>
+
+
+
+
+            }
+        </table>
+
+
+
+    </div>
+</div>
+
+
+
+@*<div>
+    <a asp-action="Index">Back to Search</a>
+</div>*@

@@ -27,8 +27,8 @@ namespace Covid19TestingServer.Models
         [DisplayName("Report time")]
         public TimeSpan? ReportingTime { get; set; }
         
-        [DisplayName("Transfered on")]
-        public DateTime TransferTime { get; set; }
+        [DisplayName("Published on")]
+        public DateTime? TransferTime { get; set; }
 
         public TblBiodata BiodataNavigation { get; set; }
         public TlkpTestMethods MethodNavigation { get; set; }

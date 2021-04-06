@@ -10,12 +10,21 @@ namespace Covid19TestingServer.Controllers
 {
     public class HomeController : Controller
     {
+        public HomeController() { }// Covid19TestingSrvContext _Context)
+        //{
+        //    //Context = _Context;// new Covid19TestingContext();
+        //}
+
+        //public Covid19TestingSrvContext Context { get; }
+
+
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction(nameof(Index), "LabTests");
+            //return View();
         }
 
-        public IActionResult About()
+       /* public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";
 
@@ -38,6 +47,6 @@ namespace Covid19TestingServer.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        }*/
     }
 }

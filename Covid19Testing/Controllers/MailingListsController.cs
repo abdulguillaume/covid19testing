@@ -26,10 +26,13 @@ namespace Covid19Testing.Controllers
         // GET: MailingLists
         public async Task<IActionResult> Index()
         {
-            ViewData["Groups"] = mailing.GetAllGrpsDict();
+            /*ViewData["Groups"] = mailing.GetAllGrpsDict();
 
-            return View(mailing.GetAll());
+            return View(mailing.GetAll());*/
+            return RedirectToAction(nameof(Index), "Home");
         }
+
+        /*
 
         // GET: MailingLists/Create
         public IActionResult Create()
@@ -226,6 +229,6 @@ namespace Covid19Testing.Controllers
         {
             return mailing.GetById(id) != null;
 
-        }
+        }*/
     }
 }

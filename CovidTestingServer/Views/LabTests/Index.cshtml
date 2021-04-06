@@ -1,0 +1,165 @@
+﻿@model IEnumerable<Covid19TestingServer.Models.TblLabTests>
+@using Covid19TestingServer.Utils
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Search Covid19 Test Result</h2>
+
+
+<form method="get" asp-action="search" id="searchForm">
+    @*<div class="input-group">
+            <input name="keyword" value="@ViewBag.keyword" placeholder="search by name" /> <button type="submit">Search</button>
+        </div>
+        <div class="input-group">
+            Testing date: <input name="date1" value="@ViewBag.testingdate" placeholder="Testing date" type="date" />
+            <input type="checkbox" name="cleardate1" /> reset
+        </div>*@
+
+    EPID-NO: <input id="keyword" name="keyword" value="@ViewBag.keyword" placeholder="Search by EPID-No" /> - Testing date: <input id="date1" name="date1" value="@ViewBag.date1" placeholder="Testing date" type="date" /> <button type="submit">Search</button>
+
+    @*<table>
+            <tr>
+                <td>EPID-NO:</td>
+                <td><input name="keyword" value="@ViewBag.keyword" placeholder="search by name" /></td>
+                <td><button type="submit">Search</button></td>
+            </tr>
+
+            <tr>
+                <td>Testing date:</td>
+                <td><input name="date1" value="@ViewBag.testingdate" placeholder="Testing date" type="date" /></td>
+                <td></td>
+            </tr>
+        </table>*@
+
+</form>
+
+<hr />
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                EPID-NO
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TestingDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReportingDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Interpretation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TransferTime)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+
+
+        @if (Model.Count() == 0)
+        {
+
+
+            <tr>
+
+                @if (ViewBag.NoResult != null)
+                {
+                    <td colspan="6" style="color:blue" align="center">
+                        @Html.Raw("Search for Covid19 test result by providing EPID-NO and Testing date.")
+                    </td>
+                }
+                else
+                {
+
+                    var date1 = DateTime.Parse(@ViewBag.date1);
+                    var dateStr = Utils.toShortdate(date1);
+                    <td colspan="6" style="color:red" align="center">
+                        @Html.Raw(string.Format("No Covid19 test result found for candidate: {0}, on {1}", ViewBag.keyword, dateStr))
+                    </td>
+                }
+
+            </tr>
+        }
+        else
+        {
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.BiodataNavigation.EpidNo)
+                    </td>
+
+                    <td>
+                        @Utils.toShortdate(item.TestingDate) @Utils.time12Hr(item.TestingTime)
+                    </td>
+                    <td>
+                        @Utils.toShortdate(item.ReportingDate) @Utils.time12Hr(item.ReportingTime)
+                        @*@Html.DisplayFor(modelItem => item.ReportingDate) @Html.DisplayFor(modelItem => item.ReportingTime)*@
+                    </td>
+                    @{
+                        //"lightskyblue"
+                        string @style = (item.Interpretation == 1) ? "red" : (item.Interpretation == 2) ? "greenyellow" : "lightgray";
+                    }
+                    <td style="background-color: @style ">
+                        @*@Html.DisplayFor(modelItem => item.Interpretation)*@
+                        @if (item.Interpretation == 97)
+                        {
+                            @Html.Raw("NO RESULT")
+                        }
+                        else if (item.Interpretation == 1)
+                        {
+                            @Html.Raw("POSITIVE")
+                        }
+                        else if (item.Interpretation == 2)
+                        {
+                            @Html.Raw("NEGATIVE")
+                        }
+                        else
+                        {
+                            @Html.Raw("-")
+                        }
+                    </td>
+                    <td>
+                        @Utils.toFulldate(item.TransferTime)
+                        @*@Html.DisplayFor(modelItem => item.TransferTime)*@
+                    </td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+
+@section Scripts {
+    <script>
+
+        $(document).ready(function () {
+
+            //alert("test");
+            $('#searchForm').submit(function (e) {
+
+                if (!$("#keyword").val() || !$("#date1").val())
+                {
+                    e.preventDefault();
+                    alert('Provide both EPID-No and Testing date!');
+                }
+                
+                    
+
+               
+                
+            })
+
+        });
+
+    </script>
+
+    }

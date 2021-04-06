@@ -82,6 +82,8 @@ namespace Covid19Testing.Controllers
 
             var tblBiodata = biodata.GetById(id);
 
+
+
             HttpContext.Session.SetString("biodata_details_token", "biodata_details_token");
 
 
@@ -91,6 +93,11 @@ namespace Covid19Testing.Controllers
             if (tblBiodata == null)
             {
                 return NotFound();
+            }
+
+            if (!TryValidateModel(tblBiodata))
+            {
+                ViewBag.BiodataNotValidated = true;
             }
 
             return View(tblBiodata);

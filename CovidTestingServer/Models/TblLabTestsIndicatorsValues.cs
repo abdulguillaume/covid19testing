@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace Covid19TestingServer.Models
@@ -12,8 +13,9 @@ namespace Covid19TestingServer.Models
 
 
         public decimal? IndicatorValue { get; set; }
-
+        [JsonIgnore]
         public TblLabTests LabtestNavigation { get; set; }
+        [JsonIgnore]
         public TlkpTestIndicators TlkpTestIndicators { get; set; }
     }
 }

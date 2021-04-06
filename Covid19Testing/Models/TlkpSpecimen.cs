@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace Covid19Testing.Models
@@ -12,7 +13,7 @@ namespace Covid19Testing.Models
 
         public int Id { get; set; }
         public string Type { get; set; }
-
+        [JsonIgnore]
         public ICollection<TblLabTestsSpecimen> TblLabTestsSpecimen { get; set; }
     }
 }

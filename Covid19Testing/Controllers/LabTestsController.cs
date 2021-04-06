@@ -32,6 +32,10 @@ using MimeKit;
 using System.Net.Mime;
 using System.Net;
 using System.Net.Mail;
+using Microsoft.Extensions.Configuration;
+using System.Net.Http;
+using System.Text;
+using System.Net.Http.Headers;
 //using System.Net.Mail;
 //using SmtpClient = System.Net.Mail.SmtpClient;
 //using System.Net;
@@ -49,11 +53,14 @@ namespace Covid19Testing.Controllers
         private readonly IMethodRepos methods;
         private readonly ITestIndicatorRepos indicators;
         private readonly IGenderRepos genders;
+        //private readonly IConfiguration configuration;
 
         //private readonly ITestIndicatorRepos indicators;
         private readonly ISpecimenRepos specimen;
 
         const int _pageSize = 5;
+
+        private TestsApi _api;
 
         private readonly List<SelectListItem> results = new List<SelectListItem>
             {
@@ -61,7 +68,7 @@ namespace Covid19Testing.Controllers
                 new SelectListItem{ Text="Negative", Value = "2" },
             };
 
-        public LabTestsController(ILabTestRepos _tests, ITestIndicatorRepos _indicators,ISpecimenRepos _specimen, IBiodataRepos _biodata, IMethodRepos _methods, IGenderRepos _genders)//Covid19TestingContext context)
+        public LabTestsController(IConfiguration _configuration, ILabTestRepos _tests, ITestIndicatorRepos _indicators,ISpecimenRepos _specimen, IBiodataRepos _biodata, IMethodRepos _methods, IGenderRepos _genders)//Covid19TestingContext context)
         {
             tests = _tests;
             biodata = _biodata;
@@ -69,6 +76,7 @@ namespace Covid19Testing.Controllers
             indicators = _indicators;
             specimen = _specimen;
             genders = _genders;
+            _api = new TestsApi(_configuration);
         }
 
         [HttpGet]
@@ -143,6 +151,9 @@ namespace Covid19Testing.Controllers
                 .Include(t => t.MethodNavigation)
                 .FirstOrDefaultAsync(m => m.Id == id);*/
 
+
+            //var json = JsonConvert.SerializeObject(LabTest.LabTest, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+
             if (LabTest == null)
             {
                 return NotFound();
@@ -170,6 +181,66 @@ namespace Covid19Testing.Controllers
             ViewData["Ready"] = Ready4Approval(LabTest.LabTest);
 
             return View(LabTest);
+        }
+
+
+
+        [HttpPost]
+        [Authorize(Roles = "dataapprover")]
+        public async Task<IActionResult> PublishResult(int Id)
+        {
+            ActionResponse response = new ActionResponse { };
+
+            response.IsSuccessful = false;
+            response.Message = "Cannot connect to central server.";
+
+            using (HttpClient client = _api.Initial())
+            {
+                client.DefaultRequestHeaders.Add("ApiKey", "37005211-de90-4b0c-a6f2-f141f5d97070");
+
+                HttpResponseMessage _response = await client.GetAsync(string.Format("api/results/{0}", Id));
+
+                if (_response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    //var result = _response.Content.ReadAsStringAsync().Result;
+                    response.IsSuccessful = false;
+                    response.Message = "Unauthorized access to central server.";
+                }
+                else if (_response.IsSuccessStatusCode)
+                {
+                    //var result = _response.Content.ReadAsStringAsync().Result;
+                    response.IsSuccessful = false;
+                    response.Message = "Covid19 Test Result already published.";
+                }
+                else
+                {
+                    var test = tests.GetById(Id);
+                    var json_payload = JsonConvert.SerializeObject(test.LabTest, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+
+                    HttpContent content = new StringContent(json_payload, Encoding.UTF8, "application/json");
+
+                    _response = await client.PostAsync("api/results/", content);
+
+                    if (_response.IsSuccessStatusCode)
+                    {
+                        //var result = _response.Content.ReadAsStringAsync().Result;
+                        response.IsSuccessful = true;
+                        response.Message = "Covid19 Test Result published successfully.";
+                        test.LabTest.PushedSvrBy = User.Identity.Name;
+                        tests.Update(test);
+
+                    }
+                    else {
+                        response.IsSuccessful = false;
+                        response.Message = "Covid19 Test Result not published.";
+                    }
+
+                }
+
+            }
+
+
+            return Json(response, new JsonSerializerSettings());
         }
 
         [HttpPost]
@@ -539,7 +610,9 @@ namespace Covid19Testing.Controllers
             //var errors = ModelState.Values;
             //foreach (var e in errors)
             //{
-            //    ;
+            //    if (e.ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid)
+            //        ;
+                
             //}
 
             if (ModelState.IsValid)
@@ -628,7 +701,10 @@ namespace Covid19Testing.Controllers
             var errors = ModelState.Values;
             foreach (var e in errors)
             {
-                ;
+                if (e.ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid)
+                {
+                    ;
+                }
             }
 
             if (ModelState.IsValid)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -16,7 +17,7 @@ namespace Covid19Testing.Models
         public int Id { get; set; }
         [DisplayName("Group")]
         public string GroupName { get; set; }
-
+        [JsonIgnore]
         public ICollection<TblEmailGroupMapping> TblEmailGroupMapping { get; set; }
     }
 }
