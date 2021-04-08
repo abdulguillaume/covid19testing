@@ -7,25 +7,57 @@ using Microsoft.AspNetCore.Mvc;
 using Covid19Testing.Models;
 using Covid19Testing.IRepos;
 using Covid19Testing.Repos;
+using Covid19Testing.ViewModels;
 
 namespace Covid19Testing.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ISpecimenRepos specimen;
-        private readonly ITestIndicatorRepos indicators;
+        //private readonly ISpecimenRepos specimen;
+        //private readonly ITestIndicatorRepos indicators;
         //private readonly Covid19TestingContext Context;
 
-        public HomeController( ISpecimenRepos _specimen, ITestIndicatorRepos _indicators)
+        private readonly ILabTestRepos tests;
+
+        public HomeController(ILabTestRepos _tests )//ISpecimenRepos _specimen, ITestIndicatorRepos _indicators)
         {
-            specimen = _specimen;
-            indicators = _indicators;
-           // Context = _Context;
+            //specimen = _specimen;
+            //indicators = _indicators;
+            // Context = _Context;
+            tests = _tests;
         }
         
         public IActionResult Index()
         {
-            return View();
+            DateTime dt = DateTime.Now;
+
+            DateTime dt72hrs = dt.AddDays(-3);
+
+            @ViewBag.date1 = dt72hrs.ToString("yyyy-MM-dd");
+
+            Rpt1ViewModel rpt = tests.GetRpt(dt72hrs.Date);
+
+            return View("Index", rpt);
+        }
+
+        [HttpGet]
+        [Route("Home/search")]
+        public IActionResult search()
+        {
+            var date1 = Request.Query["date1"].ToString();
+
+            if (string.IsNullOrEmpty(date1) || DateTime.Parse(date1)>DateTime.Now)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            ViewBag.date1 = date1;
+
+            DateTime dt = DateTime.Parse(date1);
+
+            Rpt1ViewModel rpt = tests.GetRpt(dt.Date);
+
+            return View("Index", rpt);
         }
 
         public IActionResult About()

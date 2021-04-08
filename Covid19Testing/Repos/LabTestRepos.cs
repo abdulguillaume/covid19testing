@@ -149,6 +149,95 @@ namespace Covid19Testing.Repos
             throw new NotImplementedException();
         }
 
+        public Rpt1ViewModel GetRpt(DateTime? dt)
+        {
+            //throw new NotImplementedException();
+            var cmd = Context.Database.GetDbConnection().CreateCommand();
+            cmd.CommandText = "[dbo].[sp_report1] @date1";
+
+            var param = cmd.CreateParameter();
+            param.ParameterName = "@date1";
+            param.Value = dt??DateTime.Parse("01-01-2020");
+            cmd.Parameters.Add(param);
+
+            Rpt1ViewModel rpt1 = new Rpt1ViewModel();
+
+            try
+            {
+
+                Context.Database.GetDbConnection().Open();
+                // Run the sproc
+                var reader = cmd.ExecuteReader();
+
+                //// Read Blogs from the first result set
+                //var blogs = ((IObjectContextAdapter)db)
+                //    .ObjectContext
+                //    .Translate<Blog>(reader, "A", MergeOption.AppendOnly);
+                int i = 0;
+                do
+                {
+                    while (reader.Read())
+                    {
+                        switch(i)
+                        {
+                            case 0:
+                                rpt1.grandTotal.SampleTested = reader.GetInt32(0);
+                                rpt1.grandTotal.ProcessingInLab = reader.GetInt32(1);
+                                rpt1.grandTotal.PendingApproval = reader.GetInt32(2);
+                                rpt1.grandTotal.Approved = reader.GetInt32(3);
+                                rpt1.grandTotal.Published = reader.GetInt32(4);
+                                break;
+
+                            case 1:
+                                AggregationSampleTestedInterpretation a = new AggregationSampleTestedInterpretation();
+                                a.Interpretation = reader.GetString(0);
+                                a.SampleTested = reader.GetInt32(1);
+                                a.ProcessingInLab = reader.GetInt32(2);
+                                a.PendingApproval = reader.GetInt32(3);
+                                a.Approved = reader.GetInt32(4);
+                                a.Published = reader.GetInt32(5);
+
+                                rpt1.totalPerInterpretation.Add(a);
+
+                                break;
+
+                            case 2:
+
+                                AggregationGenderBreakdownInterpretation g = new AggregationGenderBreakdownInterpretation();
+
+                                g.Interpretation = reader.GetString(0);
+                                g.Male  = reader.GetInt32(1);
+                                g.Female = reader.GetInt32(2);
+                                g.Indeterminate = reader.GetInt32(3);
+                                g.NonConforming = reader.GetInt32(4);
+                                g.TransgenderMale = reader.GetInt32(5);
+                                g.TransgenderFemale = reader.GetInt32(6);
+                                g.Unknown = reader.GetInt32(7);
+
+                                rpt1.totalPerGenderNInterpretation.Add(g);
+
+                                break;
+
+                            default: throw new NotImplementedException();
+                        }
+                    }
+                    i++;
+                } while (reader.NextResult() && i<3);
+
+            
+            }
+            catch(Exception ex) {
+                throw ex;
+            }
+            finally
+            {
+                Context.Database.GetDbConnection().Close();
+            }
+
+            return rpt1;
+
+        }
+
         public void Save(LabTestDetailsViewModel obj)
         {
             //throw new NotImplementedException();

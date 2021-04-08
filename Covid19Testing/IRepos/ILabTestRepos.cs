@@ -14,5 +14,7 @@ namespace Covid19Testing.IRepos
         IEnumerable<LabTestDetailsViewModel> GetAllByBeforeDate(DateTime dt);
 
         IEnumerable<LabTestDetailsViewModel> GetAllByAfterDate(DateTime dt);
+
+        Rpt1ViewModel GetRpt(DateTime? dt);
     }
 }

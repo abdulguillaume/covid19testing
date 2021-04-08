@@ -22,7 +22,7 @@ namespace Covid19Testing.Controllers
 
         readonly IGenderRepos genders;//= new GenderRepos();
 
-        const int _pageSize = 3;
+        const int _pageSize =20;
 
         public BiodataController(IGenderRepos _genders,IBiodataRepos _biodata)//Covid19TestingContext context)
         {

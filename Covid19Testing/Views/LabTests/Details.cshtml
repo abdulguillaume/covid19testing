@@ -238,9 +238,10 @@
         <hr />
         <label class="control-label">Download the Candidate's Covid19 Test Result.</label>
 
-        <form asp-action="GenerateDocument" method="get">
+        <form asp-action="GenerateDocument" method="get" id="GenerateDocument">
+            <input type="hidden" name="tokenId" id="tokenId" />
             <input type="hidden" name="Id" value="@Model.LabTest.Id" />
-            <input type="submit" value="Download Result" class="btn btn-default" />
+            <input type="submit" value="Download Result" class="btn btn-default download" />
         </form>
 
         <hr />
@@ -296,18 +297,30 @@
 <partial name="~/ModalPartialViews/_Input.cshtml" />
 
 
-<script>
+@section Scripts {
+
+    <script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#GenerateDocument').submit(function (e) {
+
+            //if ($('#phaseId').val() == "") {
+            //    $('#errorMsg').show(); 4
+            //    e.preventDefault();
+            //} else {
+                blockUIForDownload();
+            //}
+        });
+
+    });
 
     //function notifyCandidateThroughEmail(testid, email) {
-
- 
-        
 
     //}
 
     function publishResult(testid) {
 
-        debugger;
         $.ajax({
                 type: "POST",
                 url: '@Url.Action("PublishResult", "LabTests")',
@@ -336,13 +349,22 @@
 
     function notifyCandidateThroughEmail(testid, email) {
 
+        //$('#spinner').show();
+        spinHandle = loadingOverlay().activate();
+        //setTimeout(function () {
+        //    loadingOverlay().cancel(spinHandle);
+        //}, 3000);
+
 
         $.ajax({
                 type: "POST",
                 url: '@Url.Action("ShareDocument", "LabTests")',
                 data: { Id: testid, emails: email},
                 dataType: 'json',
-                success: function (data) {
+            success: function (data) {
+
+                    loadingOverlay().cancel(spinHandle);
+
                     if (data.IsSuccessful) {
 
                         alert_modal("Covid19 Test Result sent.", function () {
@@ -353,7 +375,8 @@
                         alert_modal(data.Message);
                     }
                 },
-                error: function (xhr, status, error) {
+            error: function (xhr, status, error) {
+                    //loadingOverlay().cancel(spinHandle);
                     alert(xhr.responseText);
                 }
             });
@@ -361,6 +384,7 @@
     }
 
     function notifyCandidate(testid) {
+
         var email = $("#BioData_Email").val();
 
         if (!email) {
@@ -374,6 +398,7 @@
     }
 
     function approveResult(testid) {
+
 
         confirm_modal("Confirm Covid19 test result", function () {
 
@@ -404,5 +429,6 @@
         });
     }
 
-</script>
+    </script>
 
+}

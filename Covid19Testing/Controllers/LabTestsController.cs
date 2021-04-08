@@ -58,7 +58,7 @@ namespace Covid19Testing.Controllers
         //private readonly ITestIndicatorRepos indicators;
         private readonly ISpecimenRepos specimen;
 
-        const int _pageSize = 5;
+        const int _pageSize = 20;
 
         private TestsApi _api;
 
@@ -118,6 +118,7 @@ namespace Covid19Testing.Controllers
         // GET: LabTests
         public async Task<IActionResult> Index()
         {
+            
             //var covid19TestingContext = _context.TblLabTests.Include(t => t.BiodataNavigation).Include(t => t.MethodNavigation);
 
             //return View(await covid19TestingContext.ToListAsync());
@@ -280,7 +281,7 @@ namespace Covid19Testing.Controllers
         {
             ActionResponse response = new ActionResponse { };
 
-            FileContentResult file = (FileContentResult)await GenerateDocument(Id);
+            FileContentResult file = (FileContentResult)await GenerateDocument(Id, "");
 
             var LabTest = tests.GetById(Id);
 
@@ -352,7 +353,7 @@ namespace Covid19Testing.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GenerateDocument(int Id)
+        public async Task<IActionResult> GenerateDocument(int Id, string tokenId)
         {
             var LabTest = tests.GetById(Id);
 
@@ -560,6 +561,9 @@ namespace Covid19Testing.Controllers
             //Printing barcode on to the Pdf. 
             //barcode.Draw(page, new PointF(25, 70));
             barcode.Draw(page, new PointF(250, 650));
+
+            if(!string.IsNullOrEmpty(tokenId))
+                Response.Cookies.Append("fileDownloadToken", tokenId);
 
             MemoryStream stream = new MemoryStream();
             //document.Save(stream, FormatType.Docx);

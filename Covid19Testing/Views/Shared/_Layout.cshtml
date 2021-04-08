@@ -37,9 +37,9 @@
                     @if (User.IsInRole("administrator"))
                     {
                         <li><a asp-area="" asp-controller="Users" asp-action="Index">Administration</a></li>
-                    }         
+                    }
                     @*<li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
-        <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>*@
+                        <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>*@
                 </ul>
                 <p class="nav navbar-text navbar-right">Hello, @User.Identity.Name!</p>
             </div>
@@ -55,6 +55,11 @@
             <p>&copy; 2021 - IOM MHAC</p>
         </footer>
     </div>
+
+    @*<div id="pleaseWait" style="display: none">
+        <img src="~/Content/PleaseWait.gif" />
+        Please Wait...
+    </div>*@
 
 
     <environment include="Development">
@@ -79,11 +84,87 @@
     </environment>
 
 
-    <script src="~/Content/jquery.loadingModal.min.js"></script>
+    @*<script src="~/Content/jquery.loadingModal.min.js"></script>*@
     <script src="~/Content/common.js"></script>
+
+    @*<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">*@
+
+    <link href="~/Content/w3.css" rel="stylesheet" />
+    <link href="~/Content/raleway.css" rel="stylesheet" />
+    <link href="~/Content/font-awesome.min.css" rel="stylesheet" />
+
+    <script src="~/Content/loadingOverlay.js"></script>
 
 
     @RenderSection("Scripts", required: false)
+
+    <script type="text/javascript">
+
+
+        var fileDownloadCheckTimer;
+
+        var spinHandle;
+
+        function blockUIForDownload() {
+            var token = new Date().getTime(); //use the current timestamp as the token value
+            $('#tokenId').val(token);
+            //$('#errorMsg').hide();
+            //$("#pleaseWait").show();
+            spinHandle = loadingOverlay().activate();
+            $(".download").attr("disabled", "disabled");
+            //$.blockUI();
+            fileDownloadCheckTimer = window.setInterval(function () {
+                //var cookieValue = $.cookie('fileDownloadToken');
+                
+                var cookieValue = getCookie('fileDownloadToken');
+                console.log(cookieValue);
+                if (cookieValue == token)
+                    finishDownload();
+            }, 1000);
+        }
+
+        function finishDownload() {
+            window.clearInterval(fileDownloadCheckTimer);
+            //$.removeCookie('fileDownloadToken'); //clears this cookie value
+            eraseCookie('fileDownloadToken');
+            //$("#pleaseWait").hide();
+            loadingOverlay().cancel(spinHandle);
+            spinHandle = undefined;
+            $(".download").removeAttr("disabled");
+        }
+
+        function getCookie(name) {
+            var nameEQ = name + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        function createCookie(name, value, days) {
+            var expires;
+
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toGMTString();
+            } else {
+                expires = "";
+            }
+            document.cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) + expires + "; path=/";
+        }
+
+        function eraseCookie(name) {
+            createCookie(name, "", -1);
+        }
+
+    </script>
+
 
 </body>
 </html>
