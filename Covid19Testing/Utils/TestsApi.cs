@@ -10,21 +10,27 @@ namespace Covid19Testing.Utils
     public class TestsApi
     {
         IConfiguration _configuration;
+        string _endpoint = "";
         public TestsApi(IConfiguration configuration)
         {
             //Initial();
-            _configuration = configuration;
+            //_configuration = configuration;
+            _endpoint = configuration.GetConnectionString("Covid19TestingServer");
+
         }
 
         public HttpClient Initial()
         {
             
-            HttpClient client = new HttpClient();
-            string endpoint = //"https://localhost:44353/api/results"; 
-                _configuration.GetConnectionString("Covid19TestingServer");
+            HttpClient client = new HttpClient();           
                                                                     //"Covid19TestingServer": "https://localhost:44353/api/results"
-            client.BaseAddress = new Uri(endpoint);
+            client.BaseAddress = new Uri(_endpoint);
             return client;
+        }
+
+        public string getEnpoint()
+        {
+            return _endpoint;
         }
 
     }

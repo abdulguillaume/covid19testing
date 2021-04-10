@@ -21,14 +21,16 @@ namespace Covid19Testing.Controllers
         private readonly IBiodataRepos biodata;
 
         readonly IGenderRepos genders;//= new GenderRepos();
+        readonly ILabTestRepos tests;
 
         const int _pageSize =20;
 
-        public BiodataController(IGenderRepos _genders,IBiodataRepos _biodata)//Covid19TestingContext context)
+        public BiodataController(IGenderRepos _genders,IBiodataRepos _biodata, ILabTestRepos _tests)//Covid19TestingContext context)
         {
             //_context = context;
             biodata = _biodata;
             genders = _genders;
+            tests = _tests;
         }
 
         [HttpGet]
@@ -230,7 +232,12 @@ namespace Covid19Testing.Controllers
                 return NotFound();
             }
 
-            return View(tblBiodata);
+            if (biodata.TestsCount(tblBiodata.Id) > 0)
+            {
+                ViewBag.Error = "Biodata can't be delete. One or more Covid19 Test Results already attached.";
+            }
+
+                return View(tblBiodata);
         }
 
         // POST: Biodata/Delete/5
@@ -242,7 +249,10 @@ namespace Covid19Testing.Controllers
             _context.TblBiodata.Remove(tblBiodata);
             await _context.SaveChangesAsync();*/
             var tblBiodata = biodata.GetById(id);
-            biodata.Delete(id);
+
+            if(biodata.TestsCount(tblBiodata.Id)==0)
+                biodata.Delete(id,User.Identity.Name);
+
             return RedirectToAction(nameof(Index));
         }
 

@@ -12,5 +12,9 @@ namespace Covid19Testing.IRepos
         IEnumerable<TblBiodata> GetAllByName(string name);
 
         TblBiodata GetByEPIDNo(object id);
+
+        void Delete(int id, string username);
+
+        int TestsCount(int biodata);
     }
 }

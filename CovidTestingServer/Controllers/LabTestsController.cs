@@ -113,6 +113,7 @@ namespace CovidTestingServer.Controllers
             var tblLabTests = await _context.TblLabTests
                             .Include(t => t.MethodNavigation)
                             .Include(x => x.BiodataNavigation)
+                            .Include(x => x.BiodataNavigation.GenderNavigation)
                             .Include(x => x.TblLabTestsIndicatorsValues)
                             .Include(x => x.TblLabTestsSpecimen)
                 .FirstOrDefaultAsync(m => m.Id == id);

@@ -29,6 +29,7 @@ namespace Covid19Testing.Controllers
         
         public IActionResult Index()
         {
+            
             DateTime dt = DateTime.Now;
 
             DateTime dt72hrs = dt.AddDays(-3);

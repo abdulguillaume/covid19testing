@@ -16,5 +16,7 @@ namespace Covid19Testing.IRepos
         IEnumerable<LabTestDetailsViewModel> GetAllByAfterDate(DateTime dt);
 
         Rpt1ViewModel GetRpt(DateTime? dt);
+
+        void Delete(int id, string username);
     }
 }

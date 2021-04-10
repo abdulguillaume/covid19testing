@@ -18,7 +18,7 @@ using Syncfusion.DocIO;
 using Syncfusion.DocIO.DLS;
 using System.IO;
 
-using Covid19Testing.Utils;
+//using Covid19Testing.Utils;
 
 
 using Syncfusion.Pdf;
@@ -27,8 +27,7 @@ using Syncfusion.Drawing;
 using Syncfusion.DocIORenderer;
 using Microsoft.AspNetCore.Authorization;
 
-using MailKit.Net.Smtp;
-using MimeKit;
+
 using System.Net.Mime;
 using System.Net;
 using System.Net.Mail;
@@ -36,9 +35,11 @@ using Microsoft.Extensions.Configuration;
 using System.Net.Http;
 using System.Text;
 using System.Net.Http.Headers;
+using Syncfusion.XlsIO;
 //using System.Net.Mail;
 //using SmtpClient = System.Net.Mail.SmtpClient;
 //using System.Net;
+
 
 namespace Covid19Testing.Controllers
 {
@@ -68,7 +69,7 @@ namespace Covid19Testing.Controllers
                 new SelectListItem{ Text="Negative", Value = "2" },
             };
 
-        public LabTestsController(IConfiguration _configuration, ILabTestRepos _tests, ITestIndicatorRepos _indicators,ISpecimenRepos _specimen, IBiodataRepos _biodata, IMethodRepos _methods, IGenderRepos _genders)//Covid19TestingContext context)
+        public LabTestsController(IConfiguration _configuration, ILabTestRepos _tests, ITestIndicatorRepos _indicators, ISpecimenRepos _specimen, IBiodataRepos _biodata, IMethodRepos _methods, IGenderRepos _genders)//Covid19TestingContext context)
         {
             tests = _tests;
             biodata = _biodata;
@@ -114,6 +115,9 @@ namespace Covid19Testing.Controllers
             return View("Index", model);
             //return null;
         }
+
+
+       
 
         // GET: LabTests
         public async Task<IActionResult> Index()
@@ -249,7 +253,7 @@ namespace Covid19Testing.Controllers
         public async Task<IActionResult> ApproveResult(int Id)
         {
             ActionResponse response = new ActionResponse { };
-            
+
             try
             {
                 var LabTest = tests.GetById(Id);
@@ -274,6 +278,129 @@ namespace Covid19Testing.Controllers
                 response.Message = "n/a";
             }
             return Json(response, new JsonSerializerSettings());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SyncfusionExportExcel(string tokenId, string date1, string date2)
+        {
+
+            using (ExcelEngine excelEngine = new ExcelEngine())
+            {
+                //Load the file into stream
+                //FileStream inputStream = new FileStream(inputFileName, FileMode.Open);
+                Stream fs = new FileStream("Templates/results.xlsx", FileMode.Open, FileAccess.Read, FileShare.Read);
+
+                //Instantiate the Excel application object
+                //IApplication application = excelEngine.Excel;
+
+                //Loads or open an existing workbook through Open method of IWorkbooks
+                IWorkbook workbook = excelEngine.Excel.Workbooks.Open(fs);
+
+                //Assigns default application version
+                //application.DefaultVersion = ExcelVersion.Excel2013;
+
+                //A new workbook is created equivalent to creating a new workbook in Excel
+                //Create a workbook with 1 worksheet
+                //IWorkbook workbook = application.Workbooks.Create(1);
+
+                //Access first worksheet from the workbook
+                IWorksheet worksheet = workbook.Worksheets[0];
+
+
+                IEnumerable<LabTestDetailsViewModel> model;
+
+                if (string.IsNullOrEmpty(date1) && !string.IsNullOrEmpty(date2))
+                    model = tests.GetAllByBeforeDate(DateTime.Parse(date2));
+                else if (string.IsNullOrEmpty(date2) && !string.IsNullOrEmpty(date1))
+                    model = tests.GetAllByAfterDate(DateTime.Parse(date1));
+                else if (!string.IsNullOrEmpty(date2) && !string.IsNullOrEmpty(date1))
+                    model = tests.GetAllByDateRange(DateTime.Parse(date1), DateTime.Parse(date2));
+                else
+                    model = tests.GetAll();
+
+
+
+
+                MemoryStream stream = new MemoryStream();
+
+                //Adding text to a cell
+
+                
+
+                //postion col P=15
+                int p = 15;
+                foreach (var v in indicators.GetAllByMethod(model.First().LabTest.Method))
+                {
+                    string col = Utils.Utils.ExcelColumnIndexToName(p);
+                    worksheet.Range[col + "1"].Text = v.IndicatorName;
+                    p++;
+
+                }
+
+                foreach (var s in specimen.GetAll())
+                {
+                    string col = Utils.Utils.ExcelColumnIndexToName(p);
+                    worksheet.Range[col + "1"].Text = s.Type;
+                    p++;
+
+                }
+
+                int row = 2;
+
+                foreach (var t in model)
+                {
+                    worksheet.Range["A"+row.ToString()].Text = t.BioData.Fullname;
+                    worksheet.Range["B" + row.ToString()].Text = t.BioData.LegalGardianName;
+                    worksheet.Range["C" + row.ToString()].Text = Utils.Utils.toShortdate(t.BioData.Dateofbirth);
+                    worksheet.Range["D" + row.ToString()].Text = t.BioData.GenderNavigation.Gender;
+                    worksheet.Range["E" + row.ToString()].Text = t.BioData.EpidNo;
+                    worksheet.Range["F" + row.ToString()].Text = t.BioData.LocalPhone;
+                    worksheet.Range["G" + row.ToString()].Text = t.BioData.HomePhone;
+                    worksheet.Range["H" + row.ToString()].Text = t.BioData.ResidentialAddress;
+                    worksheet.Range["I" + row.ToString()].Text = t.BioData.Email;
+                    worksheet.Range["J" + row.ToString()].Text = Utils.Utils.toShortdate(t.LabTest.TestingDate);
+                    worksheet.Range["K" + row.ToString()].Text = Utils.Utils.time12Hr(t.LabTest.TestingTime);
+                    worksheet.Range["L" + row.ToString()].Text = t.LabTest.InterpretationStr;
+                    worksheet.Range["M" + row.ToString()].Text = Utils.Utils.toShortdate(t.LabTest.ReportingDate);
+                    worksheet.Range["N" + row.ToString()].Text = Utils.Utils.time12Hr(t.LabTest.ReportingTime);
+                    worksheet.Range["O" + row.ToString()].Text = t.LabTest.MethodNavigation.Methodname;
+
+
+                    var _test = tests.GetById(t.LabTest.Id).LabTest;
+                    //postion col P=15
+                    p = 15;
+                    foreach (var v in _test.TblLabTestsIndicatorsValues) {
+                        string col = Utils.Utils.ExcelColumnIndexToName(p);
+                        worksheet.Range[col + row.ToString()].Text = v.IndicatorValue.Value.ToString(); ;
+                        p++;
+
+                    }
+
+                    foreach (var s in _test.TblLabTestsSpecimen)
+                    {
+                        string col = Utils.Utils.ExcelColumnIndexToName(p);
+
+                        if(s.Specimen!=99)
+                            worksheet.Range[col + row.ToString()].Text = s.Checked ? "Yes" : "No";
+                        else
+                            worksheet.Range[col + row.ToString()].Text = s.Checked ? "Yes; "+s.SpecimenOther : "No";
+                        p++;
+
+                    }
+
+                    row++;
+                }
+
+                if (!string.IsNullOrEmpty(tokenId))
+                    Response.Cookies.Append("fileDownloadToken", tokenId);
+
+                //Saving the workbook to disk in XLSX format
+                workbook.SaveAs(stream);
+
+                //return File(stream, "application/msword", "Sample.docx");
+                return File(stream.ToArray(), "application/octet-stream", "Draft.xlsx");
+                //return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpPost]
@@ -546,6 +673,7 @@ namespace Covid19Testing.Controllers
             //Release the resources used by the Word document and DocIO Renderer objects.
 
             render.Dispose();
+            render.Dispose();
             document.Dispose();
 
             //add barcode
@@ -553,7 +681,9 @@ namespace Covid19Testing.Controllers
             barcode.ErrorCorrectionLevel = PdfErrorCorrectionLevel.High;
             //Set XDimension
             barcode.XDimension = 2.5f;
-            barcode.Text = "https://dtm.iom.int/";
+            //https://localhost:44353/LabTests/Details/
+           
+            barcode.Text = string.Format("{0}LabTests/Details/{1}", _api.getEnpoint(),Id);
             //Creating new PDF Document
             //PdfDocument doc = new PdfDocument();
             //Adding new page to PDF document
@@ -747,22 +877,41 @@ namespace Covid19Testing.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
             HttpContext.Session.SetString("biodata_details_token", "");
-            return NotFound();
-            /*if (id == null)
+
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var tblLabTests = await _context.TblLabTests
+            var tblLabTest = tests.GetById(id);/*await _context.TblLabTests
                 .Include(t => t.BiodataNavigation)
                 .Include(t => t.MethodNavigation)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (tblLabTests == null)
+                .FirstOrDefaultAsync(m => m.Id == id);*/
+            if (tblLabTest == null)
             {
                 return NotFound();
             }
 
-            return View(tblLabTests);*/
+            var _indicators = indicators.GetAll();
+
+            foreach (var i in tblLabTest.Indicators)
+            {
+                i.IndicatorName = _indicators.FirstOrDefault(x => x.Id == i.Indicator).IndicatorName;
+            }
+
+            var _specimen = specimen.GetAll();
+
+            foreach (var s in tblLabTest.Specimen)
+            {
+                s.SpecimenName = _specimen.FirstOrDefault(x => x.Id == s.Specimen).Type;
+            }
+
+            if (tblLabTest.LabTest.ReportingDate != null)
+            {
+                ViewBag.Error = "Covid19 Test Result already processed. Can't be delete.";
+            }
+
+            return View(tblLabTest);
         }
 
         // POST: LabTests/Delete/5
@@ -773,6 +922,14 @@ namespace Covid19Testing.Controllers
             /*var tblLabTests = await _context.TblLabTests.FindAsync(id);
             _context.TblLabTests.Remove(tblLabTests);
             await _context.SaveChangesAsync();*/
+
+            var tblLabTest = tests.GetById(id);
+
+            if (tblLabTest.LabTest.ReportingDate == null)
+            {
+                tests.Delete(id, User.Identity.Name);
+            }
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -820,7 +977,7 @@ namespace Covid19Testing.Controllers
                 subject.TblLabTests = null;
                 subject._genderName = subject.GenderNavigation.Gender;
                 subject.GenderNavigation = null;
-                subject._dob = subject.Dateofbirth.ToString("dd/MMM/yy");
+                subject._dob = Utils.Utils.toShortdate(subject.Dateofbirth);
 
                 response.IsSuccessful = true;
                 response.Message = "n/a";

@@ -38,9 +38,9 @@
             <th>
                 EPID-NO
             </th>
-            <th>
+            @*<th>
                 Inserted on
-            </th>
+            </th>*@
             <th>
                 Inserted by
             </th>
@@ -61,37 +61,38 @@
         {
             @foreach (var item in Model)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Fullname)
-                    </td>
-                    <td>
-                        @item.Dateofbirth.ToString("dd/MMM/yy")
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.GenderNavigation.Gender)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.EpidNo)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.InsertTime)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.InsertBy)
-                    </td>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Fullname)
+                </td>
+                <td>
+                    @item.Dateofbirth.ToString("dd/MMM/yy")
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GenderNavigation.Gender)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EpidNo)
+                </td>
+                @*<td>
+                @Html.DisplayFor(modelItem => item.InsertTime)
+                @item.InsertTime.Value.ToString("dd/MMM/yy")
+                </td>*@
+                <td>
+                    @Html.DisplayFor(modelItem => item.InsertBy)
+                </td>
 
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> 
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a>
 
-                        @if (User.IsInRole("administrator")) {
-                            @Html.Raw("|")
-                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                        }
-                        
-                    </td>
-                </tr>
+                    @*@if (User.IsInRole("administrator")) {*@
+                    @Html.Raw("|")
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    @*}*@
+
+                </td>
+            </tr>
             }
         }
         <tr>

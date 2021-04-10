@@ -42,10 +42,48 @@ namespace Covid19Testing.Repos
 
             Save(obj);
         }
-
         public void Delete(object id)
         {
             throw new NotImplementedException();
+        }
+
+        public void Delete(int id, string username)
+        {
+            //throw new NotImplementedException();
+            LabTestDetailsViewModel t = GetById(id);
+
+            if (t == null) return;
+
+            var cmd = Context.Database.GetDbConnection().CreateCommand();
+            cmd.CommandText = "[dbo].[sp_delete_test] @testid, @username";
+
+            var param1 = cmd.CreateParameter();
+            param1.ParameterName = "@testid";
+            param1.Value = id;
+            cmd.Parameters.Add(param1);
+
+            var param2 = cmd.CreateParameter();
+            param2.ParameterName = "@username";
+            param2.Value = username;
+            cmd.Parameters.Add(param2);
+
+            try
+            {
+
+                Context.Database.GetDbConnection().Open();
+                // Run the sproc
+                var reader = cmd.ExecuteReader();
+
+            }
+            catch {
+
+            }
+            finally
+            {
+                Context.Database.GetDbConnection().Close();
+            }
+            //    Context.TblLabTests.Remove(t.LabTest);
+            //Context.SaveChanges();
         }
 
         public IEnumerable<LabTestDetailsViewModel> GetAll()
@@ -54,6 +92,8 @@ namespace Covid19Testing.Repos
             List<TblLabTests> _labTests = Context.TblLabTests
                 .OrderByDescending(t => t.TestingDate)
                 .Include(t=>t.BiodataNavigation)
+                .Include(t => t.BiodataNavigation.GenderNavigation)
+                .Include(t => t.MethodNavigation)
                 .ToList();
 
             if (_labTests == null) return null;
@@ -76,6 +116,8 @@ namespace Covid19Testing.Repos
             List<TblLabTests> _labTests = Context.TblLabTests
                 .Where(t => t.TestingDate.Value.Date >= dt.Date )
                 .Include(t => t.BiodataNavigation)
+                .Include(t => t.BiodataNavigation.GenderNavigation)
+                .Include(t => t.MethodNavigation)
                 .ToList();
 
             if (_labTests == null) return null;
@@ -96,6 +138,8 @@ namespace Covid19Testing.Repos
             List<TblLabTests> _labTests = Context.TblLabTests
                 .Where(t => t.TestingDate.Value.Date <= dt.Date)
                 .Include(t => t.BiodataNavigation)
+                .Include(t => t.BiodataNavigation.GenderNavigation)
+                .Include(t => t.MethodNavigation)
                 .ToList();
 
             if (_labTests == null) return null;
@@ -116,6 +160,8 @@ namespace Covid19Testing.Repos
             List<TblLabTests> _labTests = Context.TblLabTests
                 .Where(t => t.TestingDate.Value.Date >= date1.Date && t.TestingDate.Value.Date <= date2.Date)
                 .Include(t => t.BiodataNavigation)
+                .Include(t => t.BiodataNavigation.GenderNavigation)
+                .Include(t => t.MethodNavigation)
                 .ToList();
 
             if (_labTests == null) return null;

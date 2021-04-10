@@ -175,12 +175,13 @@
 
                 string style = "display: none";
 
-                if (User.IsInRole("dataapprover"))
-                {
-                    style = "";
-                }
+                //if (User.IsInRole("dataapprover"))
+                //{
+                //    style = "";
+                //}
 
             }
+
 
 
             <div style="@style">
@@ -209,8 +210,7 @@
                                     @Html.CheckBoxFor(m => m.Specimen[i].Checked)
                                 }
 
-                                @*<input asp-for="InsertTime" class="form-control" />
-                            <span asp-validation-for="InsertTime" class="text-danger"></span>*@
+
                             </td>
                         </tr>
 

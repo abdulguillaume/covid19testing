@@ -1,87 +1,248 @@
-﻿@model Covid19Testing.Models.TblLabTests
+﻿@model Covid19Testing.ViewModels.LabTestDetailsViewModel
+@using Covid19Testing.Utils
 
 @{
     ViewData["Title"] = "Delete";
 }
 
-<h2>Delete</h2>
+@*<h2>Delete</h2>*@
 
-<h3>Are you sure you want to delete this?</h3>
+@if (Model.LabTest.ReportingDate == null)
+{
+    <h3>Are you sure you want to delete this Covid19 Test Result?</h3>
+}
+else {
+    <div style="color:red">
+        <h3>@ViewBag.Error</h3>
+    </div>
+}
+
 <div>
-    <h4>TblLabTests</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Interpretation)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Interpretation)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.TestingDate)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.TestingDate)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.TestingTime)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.TestingTime)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.ReportingDate)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.ReportingDate)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.ReportingTime)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.ReportingTime)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.InsertTime)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.InsertTime)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.InsertBy)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.InsertBy)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.UpdateTime)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.UpdateTime)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.UpdateBy)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.UpdateBy)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.BiodataNavigation)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.BiodataNavigation.Fullname)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.MethodNavigation)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.MethodNavigation.InsertBy)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-default" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
-</div>
+
+
+
+
+        <div>
+            <h4>Biodata</h4>
+            <hr />
+            @Html.HiddenFor(model => model.BioData.Email)
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.BioData.Fullname)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.BioData.Fullname)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.BioData.LegalGardianName)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.BioData.LegalGardianName)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.BioData.Dateofbirth)
+                </dt>
+                <dd>
+                    @Model.BioData.Dateofbirth.ToString("dd/MMM/yy")
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.BioData.GenderNavigation.Gender)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.BioData.GenderNavigation.Gender)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.BioData.Email)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.BioData.Email)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.BioData.EpidNo)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.BioData.EpidNo)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.BioData.LocalPhone)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.BioData.LocalPhone)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.BioData.HomePhone)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.BioData.HomePhone)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.BioData.ResidentialAddress)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.BioData.ResidentialAddress)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.BioData.InsertTime)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.BioData.InsertTime)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.BioData.InsertBy)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.BioData.InsertBy)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.BioData.UpdateTime)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.BioData.UpdateTime)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.BioData.UpdateBy)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.BioData.UpdateBy)
+                </dd>
+
+            </dl>
+        </div>
+
+        @{
+
+            string style = "";
+
+            if (Model.LabTest.Approved != null && Model.LabTest.Approved.Value)
+            {
+                style = "background: url('/Content/approved4.png') no-repeat right;background-size: contain;";
+            }
+        }
+
+        <h4>Test</h4>
+        <hr />
+        <div class="row" style="@style">
+            <div class="col-md-4">
+
+                <dl class="dl-horizontal">
+                    <dt>
+                        @Html.DisplayNameFor(model => model.LabTest.Method)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => model.LabTest.MethodNavigation.Methodname)
+                    </dd>
+
+                    @foreach (var i in Model.LabTest.TblLabTestsIndicatorsValues)
+                    {
+                        <dt>
+                            @Html.DisplayFor(model => i.IndicatorName)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => i.IndicatorValue)
+                        </dd>
+                    }
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.LabTest.TestingDate)
+                    </dt>
+                    <dd>
+                        @Utils.toShortdate(@Model.LabTest.TestingDate)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.LabTest.TestingTime)
+                    </dt>
+                    <dd>
+                        @Utils.time12Hr(@Model.LabTest.TestingTime)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.LabTest.Interpretation)
+                    </dt>
+                    <dd>
+                        @if (@Model.LabTest.Interpretation == 97)
+                        {
+                            @Html.Raw("NO RESULT")
+                        }
+                        else if (@Model.LabTest.Interpretation == 1)
+                        {
+                            @Html.Raw("POSITIVE")
+                        }
+                        else if (@Model.LabTest.Interpretation == 2)
+                        {
+                            @Html.Raw("NEGATIVE")
+                        }
+                        else
+                        {
+                            @Html.Raw("-")
+                        }
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.LabTest.ReportingDate)
+                    </dt>
+                    <dd>
+                        @Utils.toShortdate(@Model.LabTest.ReportingDate)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.LabTest.ReportingTime)
+                    </dt>
+                    <dd>
+                        @Utils.time12Hr(@Model.LabTest.ReportingTime)
+
+                    </dd>
+
+                </dl>
+
+
+                <hr />
+                <h4 align="center">OFFICIAL USE ONLY</h4>
+
+                <table>
+                    @foreach (var s in @Model.Specimen)
+                    {
+                        <tr>
+                            <td>
+                                <label class="control-label">@s.SpecimenName</label>
+                            </td>
+                            <td> @Html.CheckBoxFor(model => s.Checked, new { @disabled = "disabled" })</td>
+                            <td>
+
+                                @if (s.Checked && s.Specimen == 99)
+                                {
+                                    <label class="control-label">Specify:</label>
+
+                                    @Html.DisplayFor(model => s.SpecimenOther)
+
+                                }
+
+                            </td>
+                        </tr>
+
+
+
+
+                    }
+                </table>
+
+
+
+            </div>
+        </div>
+
+        <hr />
+
+        <form asp-action="Delete">
+            <input type="hidden" asp-for="LabTest.Id" />
+            @if (Model.LabTest.ReportingDate == null)
+            {
+                <input type="submit" value="Delete" class="btn btn-default" /> @Html.Raw("|")
+            }
+            <a asp-action="Index">Back to List</a>
+        </form>
+
+
+    </div>

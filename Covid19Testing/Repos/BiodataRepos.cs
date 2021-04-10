@@ -43,16 +43,49 @@ namespace Covid19Testing.Repos
             Save(obj);
         }
 
-        public void Delete(object id)
+        public void Delete(int  id, string username)
         {
             //throw new NotImplementedException();
-            TblBiodata subject = GetById(id);
+            TblBiodata s = GetById(id);
 
-            if (subject != null)
+            if (s == null)
+                return;
+
+            var cmd = Context.Database.GetDbConnection().CreateCommand();
+            cmd.CommandText = "[dbo].[sp_delete_biodata] @biodata, @username";
+
+            var param1 = cmd.CreateParameter();
+            param1.ParameterName = "@biodata";
+            param1.Value = id;
+            cmd.Parameters.Add(param1);
+
+            var param2 = cmd.CreateParameter();
+            param2.ParameterName = "@username";
+            param2.Value = username;
+            cmd.Parameters.Add(param2);
+
+            try
             {
-                Context.TblBiodata.Remove(subject);
-                //Save();
+
+                Context.Database.GetDbConnection().Open();
+                // Run the sproc
+                var reader = cmd.ExecuteReader();
+
             }
+            catch
+            {
+
+            }
+            finally
+            {
+                Context.Database.GetDbConnection().Close();
+            }
+        }
+
+        public void Delete(object id)
+        {
+            throw new NotImplementedException();
+            
         }
 
         public IEnumerable<TblBiodata> GetAll()
@@ -88,6 +121,12 @@ namespace Covid19Testing.Repos
             Context.SaveChanges();
             Context.Entry(obj).ReloadAsync();
 
+        }
+
+        public int TestsCount(int biodata)
+        {
+            //throw new NotImplementedException();
+            return Context.TblLabTests.Count(s => s.Biodata == biodata);
         }
 
         public void Update(TblBiodata obj)

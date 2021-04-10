@@ -27,6 +27,20 @@ namespace Covid19Testing.Models
     {
         [NotMapped]
         public bool _Interpretation { get { return Interpretation!=97; } set {; } }
+
+        [NotMapped]
+        public string InterpretationStr {
+
+                    get {
+                                switch (Interpretation) {
+                                    case 1: return "Positive";
+                                    case 2: return "Negative";
+                                    case 97: return "No-Result";
+                                    default: return "-";
+                                }
+                        }
+                    set {; }
+                                        }
     }
 
         public partial class TblBiodata
