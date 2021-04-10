@@ -1,0 +1,8 @@
+﻿CREATE SEQUENCE [dbo].[tlkpMailingGroups_seq]
+    AS INT
+    START WITH 10
+    INCREMENT BY 1
+    MINVALUE 1
+    MAXVALUE 9999
+    CACHE 10;
+

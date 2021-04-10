@@ -1,0 +1,27 @@
+﻿CREATE TABLE [dbo].[tblLabTests_deleted] (
+    [id]              INT          IDENTITY (1, 1) NOT NULL,
+    [id_test]         INT          NOT NULL,
+    [biodata]         INT          NOT NULL,
+    [method]          INT          NOT NULL,
+    [interpretation]  INT          NOT NULL,
+    [testing_date]    DATE         NULL,
+    [testing_time]    TIME (0)     NULL,
+    [reporting_date]  DATE         NULL,
+    [reporting_time]  TIME (0)     NULL,
+    [insert_time]     DATETIME     NULL,
+    [insert_by]       VARCHAR (50) NULL,
+    [update_time]     DATETIME     NULL,
+    [update_by]       VARCHAR (50) NULL,
+    [approved]        BIT          NULL,
+    [archived]        BIT          NULL,
+    [archived_time]   DATETIME     NULL,
+    [archived_by]     VARCHAR (50) NULL,
+    [pushed_svr_time] DATETIME     NULL,
+    [sent_email_time] DATETIME     NULL,
+    [pushed_svr_by]   VARCHAR (50) NULL,
+    [sent_email_by]   VARCHAR (50) NULL,
+    [deleted_time]    DATETIME     NULL,
+    [deleted_by]      VARCHAR (50) NULL,
+    CONSTRAINT [PK_tblLabTests_deleted] PRIMARY KEY CLUSTERED ([id] ASC)
+);
+
