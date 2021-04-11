@@ -12,6 +12,9 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
+    <PackageReference Include="Syncfusion.DocIO.Net.Core" Version="18.4.0.49" />
+    <PackageReference Include="Syncfusion.DocIORenderer.Net.Core" Version="18.4.0.49" />
+    <PackageReference Include="Syncfusion.XlsIO.Net.Core" Version="19.1.0.55" />
   </ItemGroup>
 
 </Project>

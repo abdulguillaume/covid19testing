@@ -9,6 +9,18 @@ namespace Covid19Testing.Utils
 {
     public class Utils
     {
+        public static string toFulldate(DateTime? dt)
+        {
+            if (dt == null) return "-";
+
+            return toFulldate(dt.Value);
+        }
+
+        public static string toFulldate(DateTime dt)
+        {
+            return dt.ToString("dd/MMM/yy hh:mm tt");
+        }
+
         public static string toShortdate(DateTime? dt)
         {
             if (dt == null) return "-";

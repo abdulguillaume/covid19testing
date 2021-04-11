@@ -507,7 +507,7 @@ namespace Covid19Testing.Controllers
             p.AppendText(gardian);
 
             p = (WParagraph)table.Rows[2].Cells[1].ChildEntities[0];
-            p.AppendText(LabTest.BioData.Dateofbirth.ToShortDateString());
+            p.AppendText(Utils.Utils.toShortdate(LabTest.BioData.Dateofbirth));
 
             //skip 3
             

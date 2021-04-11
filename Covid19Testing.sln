@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Covid19Testing", "Covid19Te
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Covid19TestingDB", "Covid19TestingDB\Covid19TestingDB.sqlproj", "{6C06E0A5-731A-4823-A7E1-342A472402A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CovidTestingServer", "CovidTestingServer\CovidTestingServer.csproj", "{F1287DE7-7C4D-47D7-A961-C9C7902A6A99}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CovidTestingServer", "CovidTestingServer\CovidTestingServer.csproj", "{F1287DE7-7C4D-47D7-A961-C9C7902A6A99}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Covid19TestingSrvDB", "Covid19TestingSrvDB\Covid19TestingSrvDB.sqlproj", "{89F8A442-9E25-48AF-82E3-BC8BA69317F9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +31,12 @@ Global
 		{F1287DE7-7C4D-47D7-A961-C9C7902A6A99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1287DE7-7C4D-47D7-A961-C9C7902A6A99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F1287DE7-7C4D-47D7-A961-C9C7902A6A99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89F8A442-9E25-48AF-82E3-BC8BA69317F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89F8A442-9E25-48AF-82E3-BC8BA69317F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89F8A442-9E25-48AF-82E3-BC8BA69317F9}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{89F8A442-9E25-48AF-82E3-BC8BA69317F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89F8A442-9E25-48AF-82E3-BC8BA69317F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89F8A442-9E25-48AF-82E3-BC8BA69317F9}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

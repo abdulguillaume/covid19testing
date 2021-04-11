@@ -16,8 +16,14 @@
 
 
 <div align="right">
-    <a asp-action="Index">Back to Search</a>
+    @*<a asp-action="Index">Back to Search</a> |*@
+    <form asp-action="GenerateDocument" method="post" id="GenerateDocument">
+        <input type="hidden" name="tokenId" id="tokenId" />
+        <input type="hidden" name="Id" value="@Model.Id" />
+        <input type="submit" value="Download Result" class="btn btn-default download" />
+    </form>
 </div>
+
 
 <div>
     <h4>Biodata</h4>
@@ -87,7 +93,8 @@
             @Html.DisplayNameFor(model => model.BiodataNavigation.TransferTime)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.BiodataNavigation.TransferTime)
+            @Utils.toFulldate(@Model.BiodataNavigation.TransferTime)
+            @*@Html.DisplayFor(model => model.BiodataNavigation.TransferTime.Value.ToString("dd/MMM/yy hh:mm tt"))*@
         </dd>
 
 
@@ -212,5 +219,23 @@
 
 
 @*<div>
-    <a asp-action="Index">Back to Search</a>
-</div>*@
+        <a asp-action="Index">Back to Search</a>
+    </div>*@
+
+
+@section Scripts {
+
+    <script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#GenerateDocument').submit(function (e) {
+
+                blockUIForDownload();
+        });
+
+    });
+
+    </script>
+
+}

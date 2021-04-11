@@ -87,7 +87,8 @@ else {
                     @Html.DisplayNameFor(model => model.BioData.InsertTime)
                 </dt>
                 <dd>
-                    @Html.DisplayFor(model => model.BioData.InsertTime)
+                    @Utils.toFulldate(@Model.BioData.InsertTime.Value)
+                    @*@Html.DisplayFor(model => model.BioData.InsertTime.Value.ToString("dd/MMM/yy hh:mm tt"))*@
                 </dd>
                 <dt>
                     @Html.DisplayNameFor(model => model.BioData.InsertBy)
@@ -99,7 +100,8 @@ else {
                     @Html.DisplayNameFor(model => model.BioData.UpdateTime)
                 </dt>
                 <dd>
-                    @Html.DisplayFor(model => model.BioData.UpdateTime)
+                    @Utils.toFulldate(@Model.BioData.UpdateTime.Value)
+                    @*@Html.DisplayFor(model => model.BioData.UpdateTime.Value.ToString("dd/MMM/yy hh:mm tt"))*@
                 </dd>
                 <dt>
                     @Html.DisplayNameFor(model => model.BioData.UpdateBy)

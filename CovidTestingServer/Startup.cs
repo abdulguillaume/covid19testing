@@ -40,6 +40,7 @@ namespace CovidTestingServer
             });
 
             string connectionString = Configuration.GetConnectionString("DefaultConnection");
+            //string endpoint = Configuration.GetConnectionString("ServerEndpoint");
 
             services.AddDbContext<Covid19TestingSrvContext>(options => options.UseSqlServer(
                  connectionString

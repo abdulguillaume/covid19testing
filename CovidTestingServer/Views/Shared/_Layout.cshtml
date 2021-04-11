@@ -32,7 +32,7 @@
                 <ul class="nav navbar-nav">
                     <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
                     @*<li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>*@
+                        <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>*@
                 </ul>
             </div>
         </div>
@@ -69,6 +69,74 @@
         <script src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
 
+    <script src="~/Content/loadingOverlay.js"></script>
+
     @RenderSection("Scripts", required: false)
+
+    <script type="text/javascript">
+
+        var fileDownloadCheckTimer;
+
+        var spinHandle;
+
+        function blockUIForDownload() {
+            var token = new Date().getTime(); //use the current timestamp as the token value
+            $('#tokenId').val(token);
+            //$('#errorMsg').hide();
+            //$("#pleaseWait").show();
+            spinHandle = loadingOverlay().activate();
+            $(".download").attr("disabled", "disabled");
+            //$.blockUI();
+            fileDownloadCheckTimer = window.setInterval(function () {
+                //var cookieValue = $.cookie('fileDownloadToken');
+
+                var cookieValue = getCookie('fileDownloadToken');
+                console.log(cookieValue);
+                if (cookieValue == token)
+                    finishDownload();
+            }, 1000);
+        }
+
+        function finishDownload() {
+            window.clearInterval(fileDownloadCheckTimer);
+            //$.removeCookie('fileDownloadToken'); //clears this cookie value
+            eraseCookie('fileDownloadToken');
+            //$("#pleaseWait").hide();
+            loadingOverlay().cancel(spinHandle);
+            spinHandle = undefined;
+            $(".download").removeAttr("disabled");
+        }
+
+        function getCookie(name) {
+            var nameEQ = name + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        function createCookie(name, value, days) {
+            var expires;
+
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toGMTString();
+            } else {
+                expires = "";
+            }
+            document.cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) + expires + "; path=/";
+        }
+
+        function eraseCookie(name) {
+            createCookie(name, "", -1);
+        }
+
+    </script>
+
+
 </body>
 </html>

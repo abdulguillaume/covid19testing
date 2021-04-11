@@ -1,4 +1,5 @@
 ﻿@model Covid19Testing.Models.TblBiodata
+@using Covid19Testing.Utils
 
 @{
     ViewData["Title"] = "Details";
@@ -10,10 +11,10 @@
     <hr />
 
     <div style="color:red" align="center">
-    @if (ViewBag.BiodataNotValidated != null)
-    {
-        @Html.Raw("Please edit biodata and provide all the required fields.")
-    }
+        @if (ViewBag.BiodataNotValidated != null)
+        {
+            @Html.Raw("Please edit biodata and provide all the required fields.")
+        }
     </div>
 
     <dl class="dl-horizontal">
@@ -77,7 +78,8 @@
             @Html.DisplayNameFor(model => model.InsertTime)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.InsertTime)
+            @Utils.toFulldate(@Model.InsertTime.Value)
+            @*@Html.DisplayFor(model => model.InsertTime.Value.ToString("dd/MMM/yy hh:mm tt"))*@
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.InsertBy)
@@ -89,7 +91,8 @@
             @Html.DisplayNameFor(model => model.UpdateTime)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.UpdateTime)
+            @Utils.toFulldate(@Model.UpdateTime.Value)
+            @*@Html.DisplayFor(model => model.UpdateTime.Value.ToString("dd/MMM/yy hh:mm tt"))*@
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.UpdateBy)
@@ -105,7 +108,7 @@
     <a asp-action="Index">Biodata Search Page</a> |
     @*<a asp-action="Create" asp-controller="LabTests" asp-route-id="@Model.Id">COVID-19 TESTING FORM</a>*@
 
-    
+
     <form method="get" asp-action="Create" asp-controller="LabTests">
         <input type="hidden" asp-for="Id" />
         @if (ViewBag.BiodataNotValidated != null)
