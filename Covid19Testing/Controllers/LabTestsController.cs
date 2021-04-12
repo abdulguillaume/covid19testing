@@ -770,6 +770,13 @@ namespace Covid19Testing.Controllers
             ViewData["Method"] = new SelectList(_context.TlkpTestMethods, "Id", "InsertBy", tblLabTests.Method);*/
             TblBiodata _Biodata = biodata.GetById(_labTest.BioData.Id);
             _labTest.BioData = _Biodata;
+
+            var _indicators = indicators.GetAll();
+
+            foreach (var i in _labTest.Indicators)
+            {
+                i.IndicatorName = _indicators.FirstOrDefault(x => x.Id == i.Indicator).IndicatorName;
+            }
             //_labTest.Indicators = 
             return View(_labTest);
         }

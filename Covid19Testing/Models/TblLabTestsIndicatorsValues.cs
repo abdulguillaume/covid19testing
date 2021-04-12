@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Covid19Testing.Models
 {
@@ -10,6 +11,7 @@ namespace Covid19Testing.Models
         public int Labtest { get; set; }
         public int Indicator { get; set; }
         public int Method { get; set; }
+        [Required(ErrorMessage = "*")]
         public decimal? IndicatorValue { get; set; }
         public DateTime? InsertTime { get; set; }
         public string InsertBy { get; set; }

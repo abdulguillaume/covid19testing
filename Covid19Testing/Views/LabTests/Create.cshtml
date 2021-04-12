@@ -143,6 +143,19 @@
             <div class="form-group" id="LabTestIndicators">
 
 
+                @for (var i = 0; Model.Indicators!=null &&i < Model.Indicators.Count; i++)
+                {
+                    <div class="form-group">
+                        <input asp-for="@Model.Indicators[@i].Id" value="@Model.Indicators[@i].Id" type="hidden" />
+                        <input asp-for="@Model.Indicators[@i].IndicatorName" value="@Model.Indicators[@i].IndicatorName" type="hidden" />
+                        <input asp-for="@Model.Indicators[@i].Labtest" value="@Model.Indicators[@i].Labtest" type="hidden" />
+                        <input asp-for="@Model.Indicators[@i].Method" value="@Model.Indicators[@i].Method" type="hidden" />
+                        <input asp-for="@Model.Indicators[@i].Indicator" value="@Model.Indicators[@i].Indicator" type="hidden" />
+                        <label class="control-label">@Model.Indicators[@i].IndicatorName</label>
+                        <input asp-for="@Model.Indicators[@i].IndicatorValue" value="@Model.Indicators[@i].IndicatorValue" type="decimal" min="0" class="form-control" />
+                        <span asp-validation-for="@Model.Indicators[i].IndicatorValue" class="text-danger"></span>
+                    </div>
+                }
 
             </div>
 
@@ -298,7 +311,7 @@
                                             <input name="Indicators[` + i + `].Method" id="Indicators_` + i + `__Method" value="` + e.Method +`" type="hidden"/>
                                             <input name="Indicators[` + i + `].Indicator" id="Indicators_` + i + `__Indicator" value="` + e.Indicator + `" type="hidden"/>
                                             <label class="control-label">` + e.IndicatorName + `</label>
-                                            <input name="Indicators[` + i + `].IndicatorValue" id="Indicators_` + i + `__IndicatorValue" type="decimal"  min="0" class="form-control" />
+                                            <input name="Indicators[` + i + `].IndicatorValue" id="Indicators_` + i + `__IndicatorValue" type="decimal"  min="0" value="0.0" class="form-control" />
                                             <span asp-validation-for="Indicators_` + i + `__IndicatorValue" class="text-danger"></span>
                                             </div>`;
 

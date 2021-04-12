@@ -26,7 +26,14 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">U.N. Covid19 Isolation Center - Publishing server</a>
+                <div style="align-items: center;" class="navbar-brand row">
+                    <a asp-area="" asp-controller="Home" asp-action="Index">
+                        <img src="~/Content/iom_un3.png" style="max-height: 30px;" />
+                    </a>
+                    @*<a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">*@
+                    U.N. Covid19 Isolation Center - Publishing server
+                    @*</a>*@
+                </div>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">

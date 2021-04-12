@@ -18,7 +18,7 @@ BEGIN
 	--if (@date1 is null) set @date1 =  cast('2020-1-1' as datetime)
 
 	
-	if exists(select 1 from [dbo].[tblLabTests] where id=20 and reporting_date is null)
+	if exists(select 1 from [dbo].[tblLabTests] where id=@testid and reporting_date is null)
 	begin 
 		insert into [dbo].[tblLabTests_deleted] (
 			   [id_test]
