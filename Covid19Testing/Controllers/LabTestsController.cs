@@ -18,6 +18,9 @@ using Syncfusion.DocIO;
 using Syncfusion.DocIO.DLS;
 using System.IO;
 
+using Spire.Doc;
+using Spire.Pdf;
+
 //using Covid19Testing.Utils;
 
 
@@ -36,6 +39,9 @@ using System.Net.Http;
 using System.Text;
 using System.Net.Http.Headers;
 using Syncfusion.XlsIO;
+using Spire.Doc.Documents;
+using Spire.Pdf.Graphics;
+using QRCoder;
 //using System.Net.Mail;
 //using SmtpClient = System.Net.Mail.SmtpClient;
 //using System.Net;
@@ -122,7 +128,6 @@ namespace Covid19Testing.Controllers
         // GET: LabTests
         public async Task<IActionResult> Index()
         {
-            
             //var covid19TestingContext = _context.TblLabTests.Include(t => t.BiodataNavigation).Include(t => t.MethodNavigation);
 
             //return View(await covid19TestingContext.ToListAsync());
@@ -479,6 +484,237 @@ namespace Covid19Testing.Controllers
             return Json(response, new JsonSerializerSettings());
         }
 
+        System.Drawing.Image generateBarcode(string url)
+        {
+            MemoryStream stream = new MemoryStream();
+            QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
+            QRCode qrCode = new QRCode(qrCodeData);
+            var img = qrCode.GetGraphic(2);
+            return img;
+            //img.Save(stream, System.Drawing.Imaging.ImageFormat.Bmp);
+            //return stream;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GenerateDocumentWithFreeSpire(int Id, string tokenId)
+        {
+
+            var LabTest = tests.GetById(Id);
+
+            if (LabTest == null)
+            {
+                return NotFound();
+            }
+
+            string candidate_qr = string.Format("{0}LabTests/Details/{1}", _api.getEnpoint(), Id);
+            var Img = generateBarcode(candidate_qr);
+
+            /*Spire.Pdf.Barcode.PdfCodabarBarcode barcode1 = new Spire.Pdf.Barcode.PdfCodabarBarcode(candidate_qr);
+            barcode1.BarcodeToTextGapHeight = 1f;
+            barcode1.EnableCheckDigit = true;
+            barcode1.ShowCheckDigit = true;
+            barcode1.TextDisplayLocation = TextLocation.Bottom;*/
+            //barcode1.TextColor = Color.Green;
+            
+
+            Document document = new Document();
+            document.LoadFromFile(@"Templates/result.docx");
+
+            var section = document.Sections[0];
+
+            int c = 0;
+            foreach (DocumentObject docObj in document.ChildObjects)
+            {
+                if (docObj.DocumentObjectType == DocumentObjectType.Picture)
+                {
+                    c++;
+                    
+                    if (c == 5)
+                    {
+                        Spire.Doc.Fields.DocPicture picture = docObj as Spire.Doc.Fields.DocPicture;
+                        //Replace the image
+                        picture.LoadImage(Img);
+                        break;
+                    }
+                }
+            }
+
+
+            var table = section.Tables[0];
+
+            Paragraph p = table.Rows[0].Cells[1].Paragraphs[0];
+            p.AppendText(LabTest.BioData.Fullname);
+
+            p = table.Rows[1].Cells[1].Paragraphs[0];
+            string gardian = LabTest.BioData.LegalGardianName;
+            gardian = string.IsNullOrEmpty(gardian) ? "-" : gardian;
+            p.AppendText(gardian);
+
+            p = table.Rows[2].Cells[1].Paragraphs[0];
+            p.AppendText(Utils.Utils.toShortdate(LabTest.BioData.Dateofbirth));
+
+
+            int g_id = 1;
+            foreach (var g in genders.GetAll())
+            {
+                string tmp = g.Gender.Substring(0, 2).Trim().Trim('=');
+                try
+                {
+                    p = table.Rows[3].Cells[g_id].Paragraphs[0];
+                    var checkbox = p.AppendCheckBox();
+
+                    if (LabTest.BioData.Gender == g_id)
+                        checkbox.Checked = true;
+
+                    p.AppendText(" " + tmp);
+
+                    g_id++;
+
+                }
+                catch
+                {
+
+                }
+
+            }
+
+            p = table.Rows[4].Cells[1].Paragraphs[0];
+            p.AppendText(LabTest.BioData.EpidNo);
+
+            //skip 5 for local phone number
+            p = table.Rows[5].Cells[1].Paragraphs[0];
+            p.AppendText(LabTest.BioData.LocalPhone ?? "-");
+
+            p = table.Rows[6].Cells[1].Paragraphs[0];
+            p.AppendText(LabTest.BioData.HomePhone ?? "-");
+
+            p = table.Rows[7].Cells[1].Paragraphs[0];
+            p.AppendText(LabTest.BioData.ResidentialAddress);
+
+            //====================
+            table = section.Tables[1];
+
+            p = table.Rows[0].Cells[1].Paragraphs[0];
+            p.AppendText(LabTest.LabTest.MethodNavigation.Methodname);
+
+            int k = 1;
+
+            var _indicators = indicators.GetAll();
+
+            foreach (var i in LabTest.Indicators)
+            {
+                var iname = _indicators.FirstOrDefault(x => x.Id == i.Indicator).IndicatorName;
+
+                p =table.Rows[k].Cells[0].Paragraphs[0];
+                p.AppendText(iname);
+
+                p = table.Rows[k].Cells[1].Paragraphs[0];
+                p.AppendText(i.IndicatorValue.Value.ToString());
+
+                k++;
+            }
+
+            //============================
+
+            var p1 = table.Rows[k].Cells[0].Paragraphs[0];
+
+            p = table.Rows[k].Cells[1].Paragraphs[0];
+            var checkbox1 = p.AppendCheckBox();
+            if (LabTest.LabTest.Interpretation == 2)
+            {
+                checkbox1.Checked = true;
+                p1.AppendText("INTERPRETATION: NEGATIVE RESULT");
+            }
+            else if (LabTest.LabTest.Interpretation > 2)
+            {
+                p1.AppendText("INTERPRETATION: UNKNOWN");
+            }
+
+            p.AppendText(" NEGATIVE");
+
+            p = table.Rows[k + 1].Cells[1].Paragraphs[0];
+            checkbox1 = p.AppendCheckBox();
+            if (LabTest.LabTest.Interpretation == 1)
+            {
+                checkbox1.Checked = true;
+                p1.AppendText("INTERPRETATION: POSITIVE RESULT");
+            }
+
+            p.AppendText(" POSITIVE");
+
+            //next table
+            table = section.Tables[2];
+
+            DateTime d1 = DateTime.Today;               // any date will do
+
+            p = table.Rows[0].Cells[1].Paragraphs[0];
+            p.AppendText(LabTest.LabTest.TestingDate.Value.ToString("dd/MMM/yyyy"));
+
+            p = table.Rows[1].Cells[1].Paragraphs[0];
+            TimeSpan t = LabTest.LabTest.TestingTime.Value;
+            string chg = (d1 + t).ToString("hh:mm tt");
+            p.AppendText(chg);
+
+            p = table.Rows[2].Cells[1].Paragraphs[0];
+            p.AppendText(LabTest.LabTest.ReportingDate.Value.ToString("dd/MMM/yyyy"));
+
+            p = table.Rows[3].Cells[1].Paragraphs[0];
+            t = LabTest.LabTest.ReportingTime.Value;
+            chg = (d1 + t).ToString("hh:mm tt");
+            p.AppendText(chg);
+
+            //next table
+            table = section.Tables[3];
+
+            //Repos.SpecimenRepos _specimen = new Repos.SpecimenRepos();
+
+            k = 1;
+            foreach (var s in LabTest.Specimen)
+            {
+                bool other = s.Specimen == 99;
+
+                var sname = specimen.GetById(s.Specimen).Type;
+                p = table.Rows[k].Cells[0].Paragraphs[0];
+
+                var textRange = p.AppendText(sname + (other ? " (Specify)" : ""));
+                textRange.CharacterFormat.FontSize = 8;
+
+
+                p.ApplyStyle(Spire.Doc.Documents.BuiltinStyle.BlockText);
+                p = table.Rows[k].Cells[1].Paragraphs[0];
+                if (other && !string.IsNullOrEmpty(s.SpecimenOther))
+                {
+                    textRange = p.AppendText(s.SpecimenOther);
+                    textRange.CharacterFormat.FontSize = 10;
+                }
+
+                p = table.Rows[k].Cells[2].Paragraphs[0];
+                checkbox1 = p.AppendCheckBox();
+                if (s.Checked)
+                    checkbox1.Checked = true;
+
+                k++;
+            }
+
+
+            MemoryStream stream = new MemoryStream();
+
+            document.SaveToStream(stream, Spire.Doc.FileFormat.PDF);
+
+            Spire.Pdf.PdfDocument pdfDocument = new Spire.Pdf.PdfDocument(stream);
+
+           /*PdfImage pdfImage = PdfImage.FromStream(Img);
+            pdfDocument.Pages[0].Canvas.DrawImage(pdfImage, 250, 650);
+
+            stream = new MemoryStream();
+
+            pdfDocument.SaveToStream(stream);*/
+
+            return File(stream.ToArray(), "application/octet-stream", "Draft.pdf");
+
+        }
+
         [HttpGet]
         public async Task<IActionResult> GenerateDocument(int Id, string tokenId)
         {
@@ -644,7 +880,7 @@ namespace Covid19Testing.Controllers
                 textRange.CharacterFormat.FontSize = 8;
 
 
-                p.ApplyStyle(BuiltinStyle.BlockText);
+                p.ApplyStyle(Syncfusion.DocIO.DLS.BuiltinStyle.BlockText);
                 p = (WParagraph)table.Rows[k].Cells[1].ChildEntities[0];
                 if (other && !string.IsNullOrEmpty(s.SpecimenOther))
                 {
@@ -669,11 +905,11 @@ namespace Covid19Testing.Controllers
 
             DocIORenderer render = new DocIORenderer();
             //Converts Word document to PDF.
-            PdfDocument pdfDocument = render.ConvertToPDF(document);
+            Syncfusion.Pdf.PdfDocument pdfDocument = render.ConvertToPDF(document);
             //Release the resources used by the Word document and DocIO Renderer objects.
 
             render.Dispose();
-            render.Dispose();
+            //render.Dispose();
             document.Dispose();
 
             //add barcode

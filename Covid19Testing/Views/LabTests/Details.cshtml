@@ -236,6 +236,12 @@
 
 <div align="right">
 
+    <form asp-action="GenerateDocumentWithFreeSpire" method="get" id="GenerateDocumentWithFreeSpire">
+        <input type="hidden" name="tokenId" id="tokenId" />
+        <input type="hidden" name="Id" value="@Model.LabTest.Id" />
+        <input type="submit" value="Download Result (Test)" class="btn btn-default download" />
+    </form>
+
     @if (ViewBag.Ready && Model.LabTest.Approved)
     {
         <hr />
@@ -246,6 +252,8 @@
             <input type="hidden" name="Id" value="@Model.LabTest.Id" />
             <input type="submit" value="Download Result" class="btn btn-default download" />
         </form>
+
+
 
         <hr />
         @*<form asp-action="ShareDocument" method="get">*@
